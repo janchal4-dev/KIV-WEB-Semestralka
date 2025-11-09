@@ -1,14 +1,14 @@
 <?php
+require_once MODEL_PATH . "/ArticleModel.php";
+
 class ArticlesController {
 
     public function render() {
-
-        require "../app/models/ArticleModel.php";
         $articleModel = new ArticleModel();
-        $articles = $articleModel->getAllArticles();
+        $publishedArticles = $articleModel->getPublishedArticles();
 
-        include "../app/views/articlesView.php";
+        require HEADER_FILE;
+        require VIEW_PATH . "/articlesView.php";
+        require FOOTER_FILE;
     }
 }
-
-?>
