@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+  "*.php": "php",
+  "*.phtml": "php"
+},
+"emmet.includeLanguages": {
+  "php": "html"
+}
+
+}
