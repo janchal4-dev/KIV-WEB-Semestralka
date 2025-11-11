@@ -3,8 +3,9 @@
 class MyApplication {
 
     private array $allowed_pages = [
-        "home", "articles", "program", "upload", "userSettings", "registration", "login"
+        "home", "articles", "program", "upload", "userSettings", "registration", "login", "logout"
     ];
+
 
     public function run() {
 
@@ -33,6 +34,11 @@ class MyApplication {
 
     public function renderTwig(string $template, array $data = [])
     {
+        $data["app_base"] = BASE_URL;
+        $data["session"] = $_SESSION ?? [];
+
+        $data["user"] = $_SESSION["user"] ?? null;
+
         require_once __DIR__ . "/../vendor/autoload.php";
 
         $loader = new \Twig\Loader\FilesystemLoader(TWIG_TEMPLATE_PATH);

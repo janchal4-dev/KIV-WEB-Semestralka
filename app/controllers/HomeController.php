@@ -1,24 +1,12 @@
 <?php
-//
-//class HomeController {
-//
-//    public function render() {
-//        require HEADER_FILE;
-//        require VIEW_PATH . "/homeView.php";
-//        require FOOTER_FILE;
-//    }
-//}
 
-
-class HomeController
-{
+class HomeController {
 
     public function render()
     {
-
         $app = new MyApplication();
-        $app->renderTwig("welcome.twig", [
-            "user" => "Janchal"
+        $app->renderTwig("home.twig", [
+            "currentPage" => "home"
         ]);
     }
 }

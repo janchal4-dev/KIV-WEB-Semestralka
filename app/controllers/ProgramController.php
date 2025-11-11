@@ -2,9 +2,12 @@
 
 class ProgramController {
 
-    public function render() {
-        require HEADER_FILE;
-        require VIEW_PATH . "/programView.php";
-        require FOOTER_FILE;
+    public function render()
+    {
+        $app = new MyApplication();
+        $app->renderTwig("program.twig", [
+            "currentPage" => "program",
+            "user" => $_SESSION["user"] ?? null
+        ]);
     }
 }

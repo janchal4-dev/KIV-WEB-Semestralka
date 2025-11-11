@@ -73,7 +73,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link <?= ($_GET["page"] ?? "") === "userSettings" ? "active fw-bold" : "" ?>"
+                    <a class="nav-link <?= ($_GET["page"] ?? "") === "userSettings.twig" ? "active fw-bold" : "" ?>"
                        href="index.php?page=userSettings">Účet</a>
                 </li>
             </ul>

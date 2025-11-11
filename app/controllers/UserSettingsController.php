@@ -2,9 +2,16 @@
 
 class UserSettingsController {
 
-    public function render() {
-        require HEADER_FILE;
-        require VIEW_PATH . "/userSettingsView.php";
-        require FOOTER_FILE;
+    public function render()
+    {
+        if (!isset($_SESSION["user"])) {
+            header("Location: index.php?page=home");
+            exit;
+        }
+
+        $app = new MyApplication();
+        $app->renderTwig("userSettings.twig", [
+            "currentPage" => "userSettings",
+        ]);
     }
 }
