@@ -74,3 +74,8 @@ html, body {
   color: #ffd700 !important; /* zlatá pro aktivní položku */
   border-bottom: 2px solid #ffd700;
 }
+
+.navbar-text {
+    font-weight: 500;
+    color: #fff;
+}
