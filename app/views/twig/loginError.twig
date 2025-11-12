@@ -1,0 +1,13 @@
+{% extends "base.twig" %}
+
+{% block title %}Chyba přihlášení{% endblock %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="alert alert-{{ error.class }}">
+            <h4 class="alert-heading">{{ error.title }}</h4>
+            <p>{{ error.text|raw }}</p>
+        </div>
+
+        <a href="?page=home" class="btn btn-outline-primary">Zpět na hlavní stránku</a>
+    </div>
+{% endblock %}

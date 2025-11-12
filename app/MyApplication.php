@@ -3,7 +3,7 @@
 class MyApplication {
 
     private array $allowed_pages = [
-        "home", "articles", "program", "upload", "userSettings", "registration", "login", "logout"
+        "home", "articles", "program", "upload", "userSettings", "registration", "login", "logout","loginError",
     ];
 
 

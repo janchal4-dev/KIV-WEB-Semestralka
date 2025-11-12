@@ -32,37 +32,32 @@ class UserModel {
         ]);
     }
 
-    public function login($username, $password)
-    {
+    public function login($username, $password) {
         $stmt = $this->db->prepare("SELECT * FROM user WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
 
-        // 🟥 uživatel neexistuje
         if (!$user) {
-            return false;
+            return ["error" => "not_found"];
         }
 
-        // ⛔ účet je zablokován
         if ($user["blocked"]) {
-            return false;
+            return ["error" => "blocked"];
         }
 
-        // 🔐 verze pro aktuální fázi vývoje (nehashovaná hesla)
+        // pro ten bcrypt
+//    if (!password_verify($password, $user["password"])) {
+//        return ["error" => "wrong_password"];
+//    }
+
+        // testování
         if ($password !== $user["password"]) {
-            return false; // špatné heslo
+            return ["error" => "wrong_password"];
         }
 
-        /*
-        // ✅ bezpečná verze — aktivuj, až budou hesla hashovaná (bcrypt)
-        if (!password_verify($password, $user["password"])) {
-            return false; // špatné heslo
-        }
-        */
-
-        // vše OK
         return $user;
     }
+
 
 
 
