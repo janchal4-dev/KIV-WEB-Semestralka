@@ -1,0 +1,15 @@
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE user;
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+INSERT INTO user (username, password, name, email, blocked, roles_id)
+VALUES
+('super',  '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'SUPER_ADMIN', 'super@konf.cz', 0, 1),
+('malyo',  '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'Olda Malý', 'olda@konf.cz', 0, 2),
+('krab',   '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'Miroslav Krab', 'krab@konf.cz', 0, 3),
+('petr',   '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'Petr Článek', 'petr@konf.cz', 0, 4),
+('jana',   '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'Jana Nováková', 'jana@konf.cz', 0, 4),
+('eva',    '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'Eva Recenze', 'eva@konf.cz', 0, 3),
+('marek',  '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'Marek Kout', 'marek@konf.cz', 0, 4),
+('lenka',  '$2y$12$abcdefghijklomnpqrstuvwx1234567890ABCD1234abcd5678efgh', 'Lenka Soukupová', 'lenka@konf.cz', 0, 4);

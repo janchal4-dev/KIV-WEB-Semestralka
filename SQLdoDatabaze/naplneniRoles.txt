@@ -1,0 +1,22 @@
+-- 🔒 1️⃣ Vypni kontrolu cizích klíčů
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 🧹 2️⃣ Vymaž tabulku a vlož role znovu
+TRUNCATE TABLE roles;
+
+INSERT INTO roles (role_name)
+VALUES 
+('SuperAdmin'),
+('Admin'),
+('Recenzent'),
+('Autor');
+
+-- 🔓 3️⃣ Zase zapni kontrolu klíčů
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- ✅ 4️⃣ Ověř výsledek
+SELECT * FROM roles;
+
+
+
+!!!! vypni kontrolu cizích klíčů
