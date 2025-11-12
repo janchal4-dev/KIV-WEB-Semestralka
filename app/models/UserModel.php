@@ -32,25 +32,38 @@ class UserModel {
         ]);
     }
 
-
-    public function login($username, $password) {
-
+    public function login($username, $password)
+    {
         $stmt = $this->db->prepare("SELECT * FROM user WHERE username = ?");
         $stmt->execute([$username]);
-
         $user = $stmt->fetch();
 
-        // kvůli ověřování funkčnosti databáze - uživatelé nahráni sql skriptem
-//        if ($user && password_verify($password, $user["password"])) {
-//            return $user;
-//        }
-        if ($user && $password === $user["password"]) {
-            return $user;
+        // 🟥 uživatel neexistuje
+        if (!$user) {
+            return false;
         }
 
+        // ⛔ účet je zablokován
+        if ($user["blocked"]) {
+            return false;
+        }
 
-        return false;
+        // 🔐 verze pro aktuální fázi vývoje (nehashovaná hesla)
+        if ($password !== $user["password"]) {
+            return false; // špatné heslo
+        }
+
+        /*
+        // ✅ bezpečná verze — aktivuj, až budou hesla hashovaná (bcrypt)
+        if (!password_verify($password, $user["password"])) {
+            return false; // špatné heslo
+        }
+        */
+
+        // vše OK
+        return $user;
     }
+
 
 
     // vrátí věšechny uživatele a názvy jejich role
@@ -63,5 +76,32 @@ class UserModel {
     ");
         return $stmt->fetchAll();
     }
+
+
+    // kód pro api
+    public function getUserById(int $id): ?array {
+        $stmt = $this->db->prepare("SELECT * FROM user WHERE id_user = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function updateRole(int $id, int $newRole): bool {
+        $stmt = $this->db->prepare("UPDATE user SET roles_id = ? WHERE id_user = ?");
+        return $stmt->execute([$newRole, $id]);
+    }
+
+
+
+    public function blockUser(int $id): bool {
+        $stmt = $this->db->prepare("UPDATE user SET blocked = 1 WHERE id_user = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public function unblockUser(int $id): bool {
+        $stmt = $this->db->prepare("UPDATE user SET blocked = 0 WHERE id_user = ?");
+        return $stmt->execute([$id]);
+    }
+
+
 
 }

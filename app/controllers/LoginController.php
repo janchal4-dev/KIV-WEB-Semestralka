@@ -4,11 +4,8 @@ require_once MODEL_PATH . "/UserModel.php";
 class LoginController {
 
     public function render() {
-
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
             $model = new UserModel();
-
             $username = trim($_POST["username"]);
             $password = trim($_POST["password"]);
 
@@ -20,10 +17,12 @@ class LoginController {
                 exit;
             }
 
-            $error = "Neplatný login.";
+            // 🔴 když login selže
+            $error = "Neplatné přihlašovací údaje nebo účet je zablokován.";
         }
 
-        (new MyApplication())->renderTwig("home.twig", [
+        $app = new MyApplication();
+        $app->renderTwig("home.twig", [
             "currentPage" => "login",
             "error" => $error ?? null
         ]);
