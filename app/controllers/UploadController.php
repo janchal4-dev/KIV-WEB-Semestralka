@@ -1,16 +1,15 @@
 <?php
-
+require_once __DIR__ . "/../config/config.php";
 require_once __DIR__ . "/../models/PostModel.php";
 
 class UploadController {
+
     public function render() {
 
-        // session
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // přihlášení required
         if (empty($_SESSION["user"])) {
             header("Location: index.php?page=login");
             exit;
@@ -18,63 +17,78 @@ class UploadController {
 
         $user = $_SESSION["user"];
 
-        // přístup jen pro autory
+        // Jen AUTOŘI
         if ($user["roles_id"] != 4) {
-            die("Nemáte oprávnění nahrávat články.");
+            $app = new MyApplication();
+            $app->renderTwig("upload.twig", [
+                "currentPage" => "upload",
+                "error" => $error ?? null
+            ]);
+
+            return;
         }
 
-        // při odeslání formuláře
+        // Zpracování uploadu
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-            if (!isset($_FILES["pdfFile"]) || $_FILES["pdfFile"]["error"] !== UPLOAD_ERR_OK) {
-                $error = "Soubor nebyl nahrán.";
-            } else {
-
-                $fileTmp = $_FILES["pdfFile"]["tmp_name"];
-                $origName = $_FILES["pdfFile"]["name"];
-                $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
-
-                if ($ext !== "pdf") {
-                    $error = "Povolený je pouze PDF soubor.";
-                } else {
-
-                    // unikátní název – bonus 2 body :)
-                    $newName = uniqid("pdf_", true) . ".pdf";
-                    $target = __DIR__ . "/../../uploads/" . $newName;
-
-                    if (!is_dir(__DIR__ . "/../../uploads/")) {
-                        mkdir(__DIR__ . "/../../uploads/", 0777, true);
-                    }
-
-                    if (move_uploaded_file($fileTmp, $target)) {
-
-                        $postModel = new PostModel();
-                        $ok = $postModel->createPost(
-                            $_POST["name"] ?? "Nepojmenovaný článek",
-                            "uploads/" . $newName,
-                            $user["id_user"]
-                        );
-
-                        if ($ok) {
-                            header("Location: index.php?page=articles&uploadSuccess=1");
-                            exit;
-                        } else {
-                            $error = "Upload proběhl, ale nepodařilo se uložit do databáze.";
-                        }
-
-                    } else {
-                        $error = "Chyba při přesunu souboru.";
-                    }
-                }
-            }
+            $this->handleUpload($user["id_user"]);
+            return;
         }
 
-        // vykreslí šablonu
+        // GET = formulář
         $app = new MyApplication();
         $app->renderTwig("upload.twig", [
-            "currentPage" => "upload",
-            "user" => $user,
-            "error" => $error ?? null
+            "currentPage" => "upload"
         ]);
+    }
+
+    private function handleUpload(int $authorId) {
+
+        $name = trim($_POST["name"] ?? "");
+
+        if ($name === "") {
+            return $this->renderError("Musíte zadat název článku.");
+        }
+
+        if (!isset($_FILES["pdfFile"]) || $_FILES["pdfFile"]["error"] !== UPLOAD_ERR_OK) {
+            return $this->renderError("Nebyl nahrán žádný PDF soubor.");
+        }
+
+        $tmp = $_FILES["pdfFile"]["tmp_name"];
+        $original = $_FILES["pdfFile"]["name"];
+
+        if (mime_content_type($tmp) !== "application/pdf") {
+            return $this->renderError("Povolen je pouze PDF soubor.");
+        }
+
+        // unikátní název
+        $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+        $unique = uniqid("pdf_", true) . "." . $ext;
+
+        $uploadDir = __DIR__ . "/../../uploads/";
+
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+        $dest = $uploadDir . $unique;
+
+        if (!move_uploaded_file($tmp, $dest)) {
+            return $this->renderError("Chyba při ukládání PDF.");
+        }
+
+        // Uložení do DB
+        $model = new PostModel();
+        $ok = $model->createPost($name, $unique, $authorId);
+
+        if (!$ok) {
+            return $this->renderError("Soubor se uložil, ale nezapsal se do databáze.");
+        }
+
+        // hotovo
+        header("Location: index.php?page=articles");
+        exit;
+    }
+
+    private function renderError(string $msg) {
+        $app = new MyApplication();
+        $app->renderTwig("upload.twig", ["error" => $msg]);
     }
 }

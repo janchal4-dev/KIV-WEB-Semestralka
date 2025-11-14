@@ -7,31 +7,6 @@ class PostModel {
         $this->db = getDB();
     }
 
-    // načte všechny články (např. pro seznam)
-    public function getAllPosts(): array {
-        $sql = "SELECT * FROM post ORDER BY date_uploaded DESC";
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll();
-    }
-
-    // načte konkrétní článek podle ID (např. pro review)
-    public function getPostById(int $id): ?array {
-        $sql = "SELECT * FROM post WHERE id_post = ?";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id]);
-        $post = $stmt->fetch();
-        return $post ?: null;
-    }
-
-    // vytvoří nový článek – používají autoři
-    public function createPost(string $name, string $filePath, int $authorId): bool
-    {
-        $sql = "INSERT INTO post (name, file_path, author_id, status_id)
-                VALUES (?, ?, ?, 1)"; // 1 = čeká na schválení
-
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$name, $filePath, $authorId]);
-    }
 
     // vrátí článek i s recenzema
     public function getPostWithReviews(): array {
@@ -58,12 +33,83 @@ class PostModel {
     }
 
 
-    public function updateStatus(int $postId, int $newStatus): bool {
-        $sql = "UPDATE post SET status_id = ?, date_changed = NOW()
-            WHERE id_post = ?";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$newStatus, $postId]);
+    public function getAllPostsWithStatus(): array {
+        $sql = "SELECT p.*, s.status_name, u.name AS author_name
+            FROM post p
+            JOIN status s ON s.id_status = p.status_id
+            JOIN user u ON u.id_user = p.author_id
+            ORDER BY p.date_uploaded DESC";
+        return $this->db->query($sql)->fetchAll();
     }
 
+    public function getPostDetails(int $id): ?array {
+        $sql = "SELECT p.*, s.status_name, u.name AS author_name
+            FROM post p
+            JOIN status s ON s.id_status = p.status_id
+            JOIN user u ON u.id_user = p.author_id
+            WHERE p.id_post = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        $post = $stmt->fetch();
+
+        if (!$post) return null;
+
+        // přidáme seznam recenzentů
+        $post["reviewers"] = $this->getAssignedReviewers($id);
+        return $post;
+    }
+
+    public function updateStatus(int $postId, int $statusId): bool {
+        $sql = "UPDATE post SET status_id = ?, date_changed = NOW() WHERE id_post = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$statusId, $postId]);
+    }
+
+    public function assignReviewer(int $postId, int $uid): bool {
+        // kontrola duplicity
+        $check = $this->db->prepare("SELECT 1 FROM post_reviewer WHERE post_id = ? AND reviewer_id = ?");
+        $check->execute([$postId, $uid]);
+        if ($check->fetch()) return true;
+
+        $sql = "INSERT INTO post_reviewer (post_id, reviewer_id) VALUES (?, ?)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$postId, $uid]);
+    }
+
+    public function removeReviewer(int $postId, int $uid): bool {
+        $sql = "DELETE FROM post_reviewer WHERE post_id = ? AND reviewer_id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$postId, $uid]);
+    }
+
+    public function getAssignedReviewers(int $postId): array {
+        $sql = "SELECT u.id_user, u.name, u.email 
+            FROM post_reviewer pr
+            JOIN user u ON u.id_user = pr.reviewer_id
+            WHERE pr.post_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$postId]);
+        return $stmt->fetchAll();
+    }
+
+
+
+    public function createPost(string $name, string $uniqueFileName, int $authorId): bool {
+        $sql = "INSERT INTO post (name, file_path, author_id, status_id, date_uploaded)
+                VALUES (?, ?, ?, 1, NOW())";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$name, $uniqueFileName, $authorId]);
+    }
+
+    public function getAllPosts(): array {
+        return $this->db->query("SELECT * FROM post ORDER BY date_uploaded DESC")->fetchAll();
+    }
+
+    public function getPostById(int $id): ?array {
+        $stmt = $this->db->prepare("SELECT * FROM post WHERE id_post = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
 
 }
