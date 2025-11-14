@@ -37,6 +37,14 @@
                     <a class="nav-link {{ currentPage == 'upload' ? 'active fw-bold' }}" href="?page=upload">Nahrát článek</a>
                 </li>
                 {% endif %}
+                {% if user and user.roles_id == 3 %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ currentPage == 'reviewList' ? 'active fw-bold' }}" href="?page=reviewList">
+                            📝 Úprava recenzí
+                        </a>
+                    </li>
+                {% endif %}
+
             </ul>
 
             <ul class="navbar-nav">

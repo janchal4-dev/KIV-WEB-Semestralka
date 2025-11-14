@@ -1,0 +1,38 @@
+{% extends "base.twig" %}
+
+{% block title %}Úprava recenzí{% endblock %}
+
+{% block content %}
+    <h1 class="mb-3">📝 Úprava recenzí</h1>
+
+    <div class="table-wrapper">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Název článku</th>
+                <th>Autor</th>
+                <th>Datum nahrání</th>
+                <th>Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for post in posts %}
+                <tr>
+                    <td>{{ post.title }}</td>
+                    <td>{{ post.author_name }}</td>
+                    <td>{{ post.date_uploaded|date("d.m.Y H:i") }}</td>
+                    <td>
+                        <a href="?page=review&id={{ post.id_post }}" class="btn btn-sm btn-outline-primary">
+                            ✏️ Upravit / napsat recenzi
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">Žádné články k recenzi.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
