@@ -98,5 +98,27 @@ class UserModel {
     }
 
 
+    public function getReviewers(): array {
+        $sql = "SELECT id_user, username, name, email 
+            FROM user 
+            WHERE roles_id = 3 AND blocked = 0
+            ORDER BY name";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
+
+    public function getAuthors(): array {
+        $sql = "SELECT id_user, username, name FROM user WHERE roles_id = 4 AND blocked = 0";
+        return $this->db->query($sql)->fetchAll();
+    }
+
+
+    public function getAdmins(): array {
+        $sql = "SELECT id_user, username, name FROM user WHERE roles_id <= 2 AND blocked = 0";
+        return $this->db->query($sql)->fetchAll();
+    }
+
+
 
 }

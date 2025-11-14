@@ -1,0 +1,55 @@
+{% extends "base.twig" %}
+
+{% block title %}Správa článků{% endblock %}
+
+{% block content %}
+
+<h1>Správa článků</h1>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Název</th>
+        <th>Soubor</th>
+        <th>Autor</th>
+        <th>Stav</th>
+        <th>Akce</th>
+        <th>Přiřazení recenzenta</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for p in posts %}
+        <tr data-id="{{ p.id_post }}">
+            <td>{{ p.name }}</td>
+            <td><a href="uploads/{{ p.file_path }}" target="_blank">PDF</a></td>
+            <td>{{ p.author_name }}</td>
+            <td>
+                {% if p.status_id == 1 %}
+                    <span class="badge bg-warning text-dark">Čeká na schválení</span>
+                {% elseif p.status_id == 2 %}
+                    <span class="badge bg-success">Schválen</span>
+                {% else %}
+                    <span class="badge bg-danger">Zamítnut</span>
+                {% endif %}
+            </td>
+
+            <td>
+                <button class="btn btn-sm btn-success approve-btn">Schválit</button>
+                <button class="btn btn-sm btn-danger reject-btn">Zamítnout</button>
+            </td>
+
+            <td>
+                <select class="form-select reviewer-select">
+                    <option disabled selected>Vyber recenzenta</option>
+                    {% for r in reviewers %}
+                        <option value="{{ r.id_user }}">{{ r.name }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary btn-sm assign-btn mt-1">Přiřadit</button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
