@@ -1,22 +1,54 @@
 {% extends "base.twig" %}
 
 {% block title %}Články{% endblock %}
+
 {% block content %}
 
+    <h1>Seznam článků</h1>
 
-    <h1>Informace</h1>
-    <!-- sem vypsat php odkazy na všechny články -->
-    <p>Tady jsou informace o konferenci.</p>
-    <iframe class="pdf" src="{{ uploadPath }}pdf_68cc518a78f8e4.87839195.pdf"></iframe>
+    <div class="row mt-4">
+        {% for p in posts %}
+            <div class="col-md-6 mb-4">
+                <div class="card p-3">
 
+                    <h4>{{ p.name }}</h4>
+                    <p><strong>Autor:</strong> {{ p.author_name }}</p>
+                    <p><strong>Stav:</strong> {{ p.status_name }}</p>
 
+                    <a class="btn btn-outline-primary mb-2"
+                       href="uploads/{{ p.file_path }}" target="_blank">
+                        Zobrazit PDF
+                    </a>
 
+                    {# recenze #}
+                    {% if p.reviews %}
+                        <h5 class="mt-3">Recenze</h5>
 
-    <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pulvinar. Integer in sapien.
-        Nulla justo enim, auctor et, scelerisque sed, est...
-    </p>
-    <p>
-        Aliquam erat volutpat. Praesent in mauris eu tortor porttitor accumsan...
-    </p>
+                        <ul>
+                            {% for r in p.reviews %}
+                                <li>
+                                    ⭐ {{ r.rev_quality }}/5
+                                    🔤 {{ r.rev_language }}/5
+                                    💡 {{ r.rev_originality }}/5
+                                    <br>
+                                    <strong>{{ r.reviewer_name }}</strong>:
+                                    {{ r.comment|raw }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Žádné recenze</p>
+                    {% endif %}
+
+                    {# tlačítko pro recenzenta #}
+                    {% if user and user.roles_id == 3 %}
+                        <a href="?page=review&id={{ p.id_post }}" class="btn btn-warning mt-3">
+                            Napsat recenzi
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
 {% endblock %}

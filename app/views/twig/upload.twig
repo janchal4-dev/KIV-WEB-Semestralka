@@ -1,17 +1,28 @@
 {% extends "base.twig" %}
 
 {% block title %}Nahrát článek{% endblock %}
+
 {% block content %}
 
+    <h1>Nahrát PDF článek</h1>
 
-    <h1>Nahrát PDF soubor</h1>
-    <form action="upload.php" method="post" enctype="multipart/form-data" class="p-3 border rounded bg-light">
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="mt-3">
+
         <div class="mb-3">
-            <label for="pdfFile" class="form-label">Vyber PDF soubor:</label>
-            <input class="form-control" type="file" name="pdfFile" id="pdfFile" accept="application/pdf" required>
+            <label class="form-label">Název článku</label>
+            <input type="text" name="name" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Nahrát</button>
-    </form>
 
+        <div class="mb-3">
+            <label class="form-label">PDF soubor</label>
+            <input type="file" name="pdfFile" class="form-control" accept="application/pdf" required>
+        </div>
+
+        <button class="btn btn-primary">Nahrát</button>
+    </form>
 
 {% endblock %}

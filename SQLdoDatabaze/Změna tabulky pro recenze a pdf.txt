@@ -1,0 +1,131 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS reviews_assigned;
+DROP TABLE IF EXISTS review;
+DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS status;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+
+CREATE TABLE status (
+    id_status BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+INSERT INTO status (name) VALUES
+('Čeká na schválení'),   -- 1
+('Přiděleno recenzentům'), -- 2
+('Recenze dokončeny'),     -- 3
+('Schváleno'),            -- 4
+('Zamítnuto');            -- 5
+
+
+
+
+
+CREATE TABLE post (
+    id_post BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    author_id BIGINT UNSIGNED NOT NULL,
+    status_id BIGINT UNSIGNED NOT NULL DEFAULT 1, -- ve výchozím stavu čeká na schválení
+    date_uploaded DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_changed DATETIME NULL,
+
+    FOREIGN KEY (author_id) REFERENCES user(id_user),
+    FOREIGN KEY (status_id) REFERENCES status(id_status)
+);
+
+
+
+
+CREATE TABLE review (
+    id_review BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    rev_quality INT NOT NULL,
+    rev_language INT NOT NULL,
+    rev_originality INT NOT NULL,
+    comment TEXT,
+    date_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    published TINYINT(1) NOT NULL DEFAULT 0,
+
+    post_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+
+    FOREIGN KEY (post_id) REFERENCES post(id_post),
+    FOREIGN KEY (user_id) REFERENCES user(id_user)
+);
+
+
+
+
+CREATE TABLE reviews_assigned (
+    id_assign BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT UNSIGNED NOT NULL,
+    reviewer_id BIGINT UNSIGNED NOT NULL,
+    approved TINYINT(1) NOT NULL DEFAULT 0,
+
+    FOREIGN KEY (post_id) REFERENCES post(id_post),
+    FOREIGN KEY (reviewer_id) REFERENCES user(id_user)
+);
+
+
+
+
+
+CREATE TABLE post_reviewer (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT UNSIGNED NOT NULL,
+    reviewer_id BIGINT UNSIGNED NOT NULL,
+    assigned_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    -- jeden recenzent nesmí být přiřazen k jednomu článku vícekrát
+    UNIQUE KEY unique_assignment (post_id, reviewer_id),
+
+    -- vazby
+    CONSTRAINT fk_postreviewer_post
+        FOREIGN KEY (post_id) REFERENCES post(id_post)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_postreviewer_user
+        FOREIGN KEY (reviewer_id) REFERENCES user(id_user)
+        ON DELETE CASCADE
+);
+
+
+CREATE TABLE post_status (
+    id_status BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    status_name VARCHAR(50) NOT NULL
+);
+
+INSERT INTO post_status (status_name) VALUES
+('Čeká na schválení'),   -- 1
+('Schválen'),            -- 2
+('Zamítnut');            -- 3
+
+
+
+ALTER TABLE post
+ADD CONSTRAINT fk_post_status
+FOREIGN KEY (status_id) REFERENCES post_status(id_status);
+
+
+CREATE TABLE review_status (
+    id_status BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    status_name VARCHAR(50) NOT NULL
+);
+
+INSERT INTO review_status (status_name) VALUES
+('Čeká na schválení'),
+('Schváleno'),
+('Zamítnuto');
+
+
+ALTER TABLE review
+ADD COLUMN status_id BIGINT UNSIGNED NOT NULL DEFAULT 1,
+ADD CONSTRAINT fk_review_status
+    FOREIGN KEY (status_id) REFERENCES review_status(id_status);
+
+

@@ -32,11 +32,13 @@
                 <li class="nav-item">
                     <a class="nav-link {{ currentPage == 'program' ? 'active fw-bold' }}" href="?page=program">Program</a>
                 </li>
-                {% if user %}
+                {# Nahrát článek jen pro autory #}
+                {% if user.roles_id ==4 %}
                 <li class="nav-item">
                     <a class="nav-link {{ currentPage == 'upload' ? 'active fw-bold' }}" href="?page=upload">Nahrát článek</a>
                 </li>
                 {% endif %}
+                {# Úprava recenzí jen pro recenzenty #}
                 {% if user and user.roles_id == 3 %}
                     <li class="nav-item">
                         <a class="nav-link {{ currentPage == 'reviewList' ? 'active fw-bold' }}" href="?page=reviewList">
@@ -44,6 +46,15 @@
                         </a>
                     </li>
                 {% endif %}
+
+                {# Správa článků jen pro (super)adminy #}
+                {% if user.roles_id <= 2 %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ currentPage == 'managePosts' ? 'active fw-bold' }}"
+                           href="?page=managePosts">Správa článků</a>
+                    </li>
+                {% endif %}
+
 
             </ul>
 
