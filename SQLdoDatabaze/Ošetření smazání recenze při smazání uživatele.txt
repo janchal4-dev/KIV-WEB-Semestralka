@@ -1,0 +1,5 @@
+ALTER TABLE review
+  ADD CONSTRAINT fk_review_post FOREIGN KEY (post_id) REFERENCES post(id_post)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES user(id_user)
+    ON DELETE CASCADE ON UPDATE CASCADE;

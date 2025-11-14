@@ -104,3 +104,87 @@ document.addEventListener("DOMContentLoaded", () => {
         new UserSettings();
     }
 });
+
+
+// na psaní recenzí
+class ReviewHandler {
+    constructor() {
+        this.initEditor();
+        this.initStars();
+        this.initSubmit();
+    }
+
+    initEditor() {
+        if (document.getElementById("reviewComment")) {
+            CKEDITOR.replace("reviewComment");
+        }
+    }
+
+    initStars() {
+        document.querySelectorAll(".rating").forEach(rating => {
+            const field = rating.dataset.field;
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement("i");
+                star.className = "bi bi-star";
+                star.dataset.value = i;
+                star.addEventListener("click", () => this.setRating(rating, i));
+                rating.appendChild(star);
+            }
+            const hidden = document.createElement("input");
+            hidden.type = "hidden";
+            hidden.id = field;
+            hidden.value = 0;
+            rating.appendChild(hidden);
+        });
+    }
+
+    setRating(container, value) {
+        const stars = container.querySelectorAll("i");
+        stars.forEach((s, idx) => {
+            s.className = idx < value ? "bi bi-star-fill text-warning" : "bi bi-star";
+        });
+        container.querySelector("input").value = value;
+    }
+
+    initSubmit() {
+        const form = document.getElementById("reviewForm");
+        if (!form) return;
+
+        form.addEventListener("submit", async e => {
+            e.preventDefault();
+
+            const body = {
+                post_id: document.getElementById("post_id").value,
+                rev_quality: document.getElementById("rev_quality").value,
+                rev_language: document.getElementById("rev_language").value,
+                rev_originality: document.getElementById("rev_originality").value,
+                comment: CKEDITOR.instances.reviewComment.getData()
+            };
+
+            try {
+                const res = await fetch("app/api/reviews.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert("✅ Recenze uložena!");
+                    location.href = "index.php?page=articles";
+                } else {
+                    alert("❌ " + (data.error || "Chyba při ukládání recenze."));
+                }
+            } catch (err) {
+                console.error("Chyba při odeslání recenze:", err);
+            }
+        });
+    }
+}
+
+// Automatická inicializace
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.querySelector(".review-form")) {
+        new ReviewHandler();
+    }
+});
