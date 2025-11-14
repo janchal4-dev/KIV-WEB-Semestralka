@@ -66,6 +66,9 @@ class MyApplication {
         $data["app_base"] = BASE_URL;
         $data["user"] = $_SESSION["user"] ?? null;
 
+
+
+
         echo $twig->render($template, $data);
     }
 

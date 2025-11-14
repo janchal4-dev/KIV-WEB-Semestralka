@@ -61,12 +61,12 @@ html, body {
 }
 
 .pdf {
-  /* border:none;
-  display:block;*/ 
-  margin:0 auto;
-  width: 75%;
+    /* border:none;
+    display:block;*/
+    margin:0 auto;
+    width: 10%;
 
-  aspect-ratio: 4/3;
+    aspect-ratio: 4/3;
 
 }
 

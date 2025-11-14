@@ -9,24 +9,52 @@ class PostModel {
 
 
     // vrátí článek i s recenzema
-    public function getPostWithReviews(): array {
-        $sql = "SELECT p.*, u.name AS author_name, s.status_name
-            FROM post p
-            JOIN user u ON p.author_id = u.id_user
-            JOIN post_status s ON p.status_id = s.id_status
-            ORDER BY p.date_uploaded DESC";
+    public function getPostsWithReviews(?int $filterUserId = null, ?int $role = null): array {
 
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll();
+        // ADMIN/SUPERADMIN → vidí vše
+        if ($role === 1 || $role === 2) {
+            $sql = "SELECT p.*, u.name AS author_name
+                FROM post p
+                JOIN user u ON p.author_id = u.id_user
+                ORDER BY p.date_uploaded DESC";
+            return $this->db->query($sql)->fetchAll();
+        }
+
+        // AUTOR → vidí vlastní články
+        if ($role === 4) {
+            $sql = "SELECT p.*, u.name AS author_name
+                FROM post p
+                JOIN user u ON p.author_id = u.id_user
+                WHERE p.author_id = ?
+                ORDER BY p.date_uploaded DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$filterUserId]);
+            return $stmt->fetchAll();
+        }
+
+        // RECENZENT → vidí jen články, které má přidělené
+        if ($role === 3) {
+            $sql = "SELECT p.*, u.name AS author_name
+                FROM post p
+                JOIN review_assignment a ON p.id_post = a.post_id
+                JOIN user u ON p.author_id = u.id_user
+                WHERE a.reviewer_id = ?
+                ORDER BY p.date_uploaded DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$filterUserId]);
+            return $stmt->fetchAll();
+        }
+
+        return [];
     }
-    // vrátí recenze
+
+
     public function getReviewsForPost(int $postId): array {
         $sql = "SELECT r.*, u.name AS reviewer_name
             FROM review r
             JOIN user u ON r.user_id = u.id_user
-            WHERE r.post_id = ? AND r.published = 1
+            WHERE r.post_id = ?
             ORDER BY r.date_created DESC";
-
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$postId]);
         return $stmt->fetchAll();
