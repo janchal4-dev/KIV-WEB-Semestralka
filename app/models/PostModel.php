@@ -87,11 +87,11 @@ class PostModel {
         return $post;
     }
 
-    public function updateStatus(int $postId, int $statusId): bool {
-        $sql = "UPDATE post SET status_id = ?, date_changed = NOW() WHERE id_post = ?";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$statusId, $postId]);
-    }
+//    public function updateStatus(int $postId, int $statusId): bool {
+//        $sql = "UPDATE post SET status_id = ?, date_changed = NOW() WHERE id_post = ?";
+//        $stmt = $this->db->prepare($sql);
+//        return $stmt->execute([$statusId, $postId]);
+//    }
 
     public function assignReviewer(int $postId, int $uid): bool {
         // kontrola duplicity
@@ -139,5 +139,26 @@ class PostModel {
         $stmt->execute([$id]);
         return $stmt->fetch() ?: null;
     }
+
+    public function getAllPostsFull(): array {
+
+        $sql = "
+        SELECT p.*, u.name AS author_name, s.status_name
+        FROM post p
+        JOIN user u ON u.id_user = p.author_id
+        JOIN status s ON s.id_status = p.status_id
+        ORDER BY p.date_uploaded DESC
+    ";
+
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function updateStatus(int $postId, int $statusId): bool {
+        $sql = "UPDATE post SET status_id = ?, date_changed = NOW() WHERE id_post = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$statusId, $postId]);
+    }
+
 
 }

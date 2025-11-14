@@ -188,3 +188,102 @@ document.addEventListener("DOMContentLoaded", () => {
         new ReviewHandler();
     }
 });
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ============================
+    // 🔥 1) USER SETTINGS (už běží už ok)
+    // ============================
+    if (document.querySelector("table")?.classList.contains("user-settings-table")) {
+        new UserSettings();
+    }
+
+    // ============================
+    // 🔥 2) REVIEW EDITOR
+    // ============================
+    if (document.querySelector(".review-form")) {
+        new ReviewHandler();
+    }
+
+    // ============================
+    // 🔥 3) DELEGACE KLIKU – STATUS
+    // ============================
+    document.addEventListener("click", async (e) => {
+        if (e.target.classList.contains("change-status")) {
+
+            const tr = e.target.closest("tr");
+            const postId = tr.dataset.id;
+            const newStatus = e.target.dataset.status;
+
+            try {
+                const res = await fetch("app/api/posts.php/status", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        status_id: newStatus
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert("Status změněn");
+                    location.reload();
+                } else {
+                    alert(data.error || "Chyba při změně statusu");
+                }
+
+            } catch (err) {
+                console.error("Chyba při změně statusu:", err);
+            }
+
+        }
+    });
+
+    // ============================
+    // 🔥 4) DELEGACE KLIKU – REZENCENT
+    // ============================
+    document.addEventListener("click", async (e) => {
+        if (e.target.classList.contains("assign-btn")) {
+
+            const tr = e.target.closest("tr");
+            const postId = tr.dataset.id;
+            const select = tr.querySelector(".assign-reviewer");
+            const reviewerId = select.value;
+
+            if (!reviewerId) {
+                alert("Vyber recenzenta.");
+                return;
+            }
+
+            try {
+                const res = await fetch("app/api/posts.php/assign", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        reviewer_id: reviewerId
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    const msg = tr.querySelector(".reviewer-msg");
+                    msg.textContent = "Recenzent přiřazen.";
+                    msg.classList.remove("d-none");
+                } else {
+                    alert(data.error || "Chyba přiřazení");
+                }
+
+            } catch (err) {
+                console.error("Chyba přiřazení:", err);
+            }
+
+        }
+    });
+
+});

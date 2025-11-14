@@ -114,10 +114,6 @@ class UserModel {
     }
 
 
-    public function getAdmins(): array {
-        $sql = "SELECT id_user, username, name FROM user WHERE roles_id <= 2 AND blocked = 0";
-        return $this->db->query($sql)->fetchAll();
-    }
 
 
 
