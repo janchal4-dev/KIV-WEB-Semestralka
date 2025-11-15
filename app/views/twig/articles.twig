@@ -37,9 +37,10 @@
                                 <strong>Recenzent:</strong> {{ r.reviewer_name }}<br>
 
                                 <strong>Kvalita:</strong>
-                                {% for i in 1..r.rev_quality %}<span class="text-warning">★</span>{% endfor %}
-
-                                {% set emptyStars = 5 - r.rev_quality %}
+                                {% if r.rev_quality > 0 %}
+                                    {% for i in 1..r.rev_quality %}<span class="text-warning">★</span>{% endfor %}
+                                {% endif %}
+                                {% set emptyStars = 5 - (r.rev_quality) %}
                                 {% if emptyStars > 0 %}
                                     {% for i in 1..emptyStars %}
                                         <span class="text-muted">☆</span>
@@ -49,9 +50,10 @@
                                 <br>
 
                                 <strong>Jazyk:</strong>
-                                {% for i in 1..r.rev_language %}<span class="text-warning">★</span>{% endfor %}
-
-                                {% set emptyStars = 5 - r.rev_language %}
+                                {% if r.rev_language > 0 %}
+                                    {% for i in 1..r.rev_language %}<span class="text-warning">★</span>{% endfor %}
+                                {% endif %}
+                                {% set emptyStars = 5 - (r.rev_language) %}
                                 {% if emptyStars > 0 %}
                                     {% for i in 1..emptyStars %}
                                         <span class="text-muted">☆</span>
@@ -60,9 +62,10 @@
                                 <br>
 
                                 <strong>Originalita:</strong>
-                                {% for i in 1..r.rev_originality %}<span class="text-warning">★</span>{% endfor %}
-
-                                {% set emptyStars = 5 - r.rev_originality %}
+                                {% if r.rev_originality > 0 %}
+                                    {% for i in 1..r.rev_originality %}<span class="text-warning">★</span>{% endfor %}
+                                {% endif %}
+                                {% set emptyStars = 5 - (r.rev_originality) %}
                                 {% if emptyStars > 0 %}
                                     {% for i in 1..emptyStars %}
                                         <span class="text-muted">☆</span>
