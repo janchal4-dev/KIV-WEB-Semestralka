@@ -1,15 +1,18 @@
 <?php
 
-class PostModel {
+class PostModel
+{
     private PDO $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = getDB();
     }
 
 
     // vrátí článek i s recenzema
-    public function getPostsWithReviews(?int $filterUserId = null, ?int $role = null): array {
+    public function getPostsWithReviews(?int $filterUserId = null, ?int $role = null): array
+    {
 
         // ADMIN/SUPERADMIN → vidí vše
         if ($role === 1 || $role === 2) {
@@ -49,7 +52,8 @@ class PostModel {
     }
 
 
-    public function getReviewsForPost(int $postId): array {
+    public function getReviewsForPost(int $postId): array
+    {
         $sql = "SELECT r.*, u.name AS reviewer_name
             FROM review r
             JOIN user u ON r.user_id = u.id_user
@@ -61,7 +65,8 @@ class PostModel {
     }
 
 
-    public function getAllPostsWithStatus(): array {
+    public function getAllPostsWithStatus(): array
+    {
         $sql = "SELECT p.*, s.status_name, u.name AS author_name
             FROM post p
             JOIN status s ON s.id_status = p.status_id
@@ -70,7 +75,8 @@ class PostModel {
         return $this->db->query($sql)->fetchAll();
     }
 
-    public function getPostDetails(int $id): ?array {
+    public function getPostDetails(int $id): ?array
+    {
         $sql = "SELECT p.*, s.status_name, u.name AS author_name
             FROM post p
             JOIN status s ON s.id_status = p.status_id
@@ -93,7 +99,8 @@ class PostModel {
 //        return $stmt->execute([$statusId, $postId]);
 //    }
 
-    public function assignReviewer(int $postId, int $uid): bool {
+    public function assignReviewer(int $postId, int $uid): bool
+    {
         // kontrola duplicity
         $check = $this->db->prepare("SELECT 1 FROM post_reviewer WHERE post_id = ? AND reviewer_id = ?");
         $check->execute([$postId, $uid]);
@@ -104,13 +111,15 @@ class PostModel {
         return $stmt->execute([$postId, $uid]);
     }
 
-    public function removeReviewer(int $postId, int $uid): bool {
+    public function removeReviewer(int $postId, int $uid): bool
+    {
         $sql = "DELETE FROM post_reviewer WHERE post_id = ? AND reviewer_id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$postId, $uid]);
     }
 
-    public function getAssignedReviewers(int $postId): array {
+    public function getAssignedReviewers(int $postId): array
+    {
         $sql = "SELECT u.id_user, u.name, u.email 
             FROM post_reviewer pr
             JOIN user u ON u.id_user = pr.reviewer_id
@@ -121,8 +130,8 @@ class PostModel {
     }
 
 
-
-    public function createPost(string $name, string $uniqueFileName, int $authorId): bool {
+    public function createPost(string $name, string $uniqueFileName, int $authorId): bool
+    {
         $sql = "INSERT INTO post (name, file_path, author_id, status_id, date_uploaded)
                 VALUES (?, ?, ?, 1, NOW())";
 
@@ -130,17 +139,20 @@ class PostModel {
         return $stmt->execute([$name, $uniqueFileName, $authorId]);
     }
 
-    public function getAllPosts(): array {
+    public function getAllPosts(): array
+    {
         return $this->db->query("SELECT * FROM post ORDER BY date_uploaded DESC")->fetchAll();
     }
 
-    public function getPostById(int $id): ?array {
+    public function getPostById(int $id): ?array
+    {
         $stmt = $this->db->prepare("SELECT * FROM post WHERE id_post = ?");
         $stmt->execute([$id]);
         return $stmt->fetch() ?: null;
     }
 
-    public function getAllPostsFull(): array {
+    public function getAllPostsFull(): array
+    {
 
         $sql = "
         SELECT p.*, u.name AS author_name, s.status_name
@@ -154,11 +166,14 @@ class PostModel {
         return $stmt->fetchAll();
     }
 
-    public function updateStatus(int $postId, int $statusId): bool {
+    public function updateStatus(int $postId, int $statusId): bool
+    {
         $sql = "UPDATE post SET status_id = ?, date_changed = NOW() WHERE id_post = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$statusId, $postId]);
     }
+
+
 
 
 }

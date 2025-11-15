@@ -6,8 +6,8 @@
 
     <h1>Správa článků</h1>
 
-    <table class="table table-striped">
-        <thead>
+    <table class="table table-striped manage-posts-table">
+    <thead>
         <tr>
             <th>Název</th>
             <th>Soubor</th>
@@ -50,6 +50,19 @@
                     <button class="btn btn-primary btn-sm assign-btn mt-1">Přiřadit</button>
 
                     <div class="reviewer-msg mt-1 text-success d-none"></div>
+
+
+
+                    {% if p.assigned_reviewers is not empty %}
+                        <div class="mt-2">
+                            <small class="text-muted">Již přiřazeni:</small><br>
+
+                            {% for r in p.assigned_reviewers %}
+                                <span class="badge bg-secondary me-1">{{ r.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                 </td>
             </tr>
 

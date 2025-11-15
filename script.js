@@ -98,12 +98,12 @@ class UserSettings {
     }
 }
 
-// 🔥 Automatická inicializace jen na stránce userSettings
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.querySelector("table")?.classList.contains("user-settings-table")) {
-        new UserSettings();
-    }
-});
+// // 🔥 Automatická inicializace jen na stránce userSettings
+// document.addEventListener("DOMContentLoaded", () => {
+//     if (document.querySelector("table")?.classList.contains("user-settings-table")) {
+//         new UserSettings();
+//     }
+// });
 
 
 // na psaní recenzí
@@ -121,6 +121,7 @@ class ReviewHandler {
     }
 
     initStars() {
+        alert("Baf");
         document.querySelectorAll(".rating").forEach(rating => {
             const field = rating.dataset.field;
             for (let i = 1; i <= 5; i++) {
@@ -191,99 +192,83 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+class ManagePosts {
+    constructor() {
+        this.initStatusButtons();
+        this.initAssignButtons();
+    }
+
+    // změna statusu
+    initStatusButtons() {
+        document.addEventListener("click", async (e) => {
+            if (!e.target.classList.contains("change-status")) return;
+
+            const tr = e.target.closest("tr");
+            const postId = tr.dataset.id;
+            const status = e.target.dataset.status;
+
+            const res = await fetch("app/api/posts.php/status", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId, status: status })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                alert("Status změněn");
+                location.reload();
+            } else {
+                alert(data.error || "Chyba");
+            }
+        });
+    }
+
+    // přiřazení recenzenta
+    initAssignButtons() {
+        document.addEventListener("click", async (e) => {
+            if (!e.target.classList.contains("assign-btn")) return;
+
+            const tr = e.target.closest("tr");
+            const postId = tr.dataset.id;
+            const reviewerId = tr.querySelector(".assign-reviewer").value;
+
+            if (!reviewerId) {
+                alert("Vyber recenzenta");
+                return;
+            }
+
+            const res = await fetch("app/api/posts.php/assign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId, reviewer_id: reviewerId })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                const msg = tr.querySelector(".reviewer-msg");
+                msg.textContent = "Recenzent přiřazen";
+                msg.classList.remove("d-none");
+            } else {
+                alert(data.error || "Chyba");
+            }
+        });
+    }
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ============================
-    // 🔥 1) USER SETTINGS (už běží už ok)
-    // ============================
-    if (document.querySelector("table")?.classList.contains("user-settings-table")) {
+    if (document.querySelector(".user-settings-table")) {
         new UserSettings();
     }
 
-    // ============================
-    // 🔥 2) REVIEW EDITOR
-    // ============================
     if (document.querySelector(".review-form")) {
         new ReviewHandler();
     }
 
-    // ============================
-    // 🔥 3) DELEGACE KLIKU – STATUS
-    // ============================
-    document.addEventListener("click", async (e) => {
-        if (e.target.classList.contains("change-status")) {
-
-            const tr = e.target.closest("tr");
-            const postId = tr.dataset.id;
-            const newStatus = e.target.dataset.status;
-
-            try {
-                const res = await fetch("app/api/posts.php/status", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        post_id: postId,
-                        status_id: newStatus
-                    })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    alert("Status změněn");
-                    location.reload();
-                } else {
-                    alert(data.error || "Chyba při změně statusu");
-                }
-
-            } catch (err) {
-                console.error("Chyba při změně statusu:", err);
-            }
-
-        }
-    });
-
-    // ============================
-    // 🔥 4) DELEGACE KLIKU – REZENCENT
-    // ============================
-    document.addEventListener("click", async (e) => {
-        if (e.target.classList.contains("assign-btn")) {
-
-            const tr = e.target.closest("tr");
-            const postId = tr.dataset.id;
-            const select = tr.querySelector(".assign-reviewer");
-            const reviewerId = select.value;
-
-            if (!reviewerId) {
-                alert("Vyber recenzenta.");
-                return;
-            }
-
-            try {
-                const res = await fetch("app/api/posts.php/assign", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        post_id: postId,
-                        reviewer_id: reviewerId
-                    })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    const msg = tr.querySelector(".reviewer-msg");
-                    msg.textContent = "Recenzent přiřazen.";
-                    msg.classList.remove("d-none");
-                } else {
-                    alert(data.error || "Chyba přiřazení");
-                }
-
-            } catch (err) {
-                console.error("Chyba přiřazení:", err);
-            }
-
-        }
-    });
-
+    if (document.querySelector("table.manage-posts-table")) {
+        new ManagePosts();
+    }
 });

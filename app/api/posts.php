@@ -1,13 +1,11 @@
 <?php
 require_once __DIR__ . "/../config/config.php";
 require_once __DIR__ . "/../models/PostModel.php";
-require_once __DIR__ . "/../models/UserModel.php";
 
 header("Content-Type: application/json");
-
 session_start();
 
-if (empty($_SESSION["user"])) {
+if (!isset($_SESSION["user"])) {
     http_response_code(401);
     echo json_encode(["error" => "Nejste přihlášen."]);
     exit;
@@ -15,78 +13,70 @@ if (empty($_SESSION["user"])) {
 
 $user = $_SESSION["user"];
 
-// jen admini / superadmini
+// povoleno jen adminům a superadminům
 if ($user["roles_id"] > 2) {
     http_response_code(403);
     echo json_encode(["error" => "Nemáte oprávnění."]);
     exit;
 }
 
+$method = $_SERVER["REQUEST_METHOD"];
+$uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
+$action = $uri[array_key_last($uri)];
+
 $model = new PostModel();
 
-// zjistit poslední úsek URL
-$uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
-$action = $uri[count($uri) - 1];
+// =============================
+// 🔵 1) ZMĚNA STATUSU
+// =============================
+if ($action === "status" && $method === "POST") {
 
-switch ($action) {
+    $data = json_decode(file_get_contents("php://input"), true);
 
-    // -----------------------------------------
-    // 🔵 ZMĚNA STATUSU (schválit / zamítnout)
-    // POST /api/posts/status
-    // -----------------------------------------
-    case "status":
+    $postId = intval($data["post_id"] ?? 0);
+    $status = intval($data["status"] ?? 0);
 
-        $data = json_decode(file_get_contents("php://input"), true);
-        $postId = intval($data["post_id"]);
-        $newStatus = intval($data["status"]);
+    if (!$postId || !$status) {
+        http_response_code(400);
+        echo json_encode(["error" => "Chybí data."]);
+        exit;
+    }
 
-        if (!$postId || !$newStatus) {
-            http_response_code(400);
-            echo json_encode(["error" => "Chybí data."]);
-            exit;
-        }
+    $ok = $model->updateStatus($postId, $status);
 
-        $ok = $model->updateStatus($postId, $newStatus);
-
-        echo json_encode([
-            "success" => $ok,
-            "message" => $ok ? "Status změněn." : "Nepodařilo se změnit status."
-        ]);
-        break;
-
-
-
-    // -----------------------------------------
-    // 🟢 PŘIŘAZENÍ RECENZENTA
-    // POST /api/posts/assign
-    // -----------------------------------------
-    case "assign":
-
-        $data = json_decode(file_get_contents("php://input"), true);
-        $postId = intval($data["post_id"]);
-        $reviewerId = intval($data["reviewer_id"]);
-
-        if (!$postId || !$reviewerId) {
-            http_response_code(400);
-            echo json_encode(["error" => "Chybí data."]);
-            exit;
-        }
-
-        $sql = getDB()->prepare("
-            INSERT IGNORE INTO post_reviewer (post_id, reviewer_id)
-            VALUES (?, ?)
-        ");
-        $ok = $sql->execute([$postId, $reviewerId]);
-
-        echo json_encode([
-            "success" => true,
-            "message" => "Recenzent přiřazen."
-        ]);
-        break;
-
-
-    default:
-        http_response_code(404);
-        echo json_encode(["error" => "Neznámá akce."]);
-        break;
+    echo json_encode(["success" => $ok]);
+    exit;
 }
+
+
+// =============================
+// 🟢 2) PŘIŘAZENÍ RECENZENTA
+// =============================
+if ($action === "assign" && $method === "POST") {
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $postId = intval($data["post_id"] ?? 0);
+    $reviewerId = intval($data["reviewer_id"] ?? 0);
+
+    if (!$postId || !$reviewerId) {
+        http_response_code(400);
+        echo json_encode(["error" => "Chybí data."]);
+        exit;
+    }
+
+    $db = getDB();
+    $sql = $db->prepare("
+        INSERT IGNORE INTO post_reviewer (post_id, reviewer_id)
+        VALUES (?, ?)
+    ");
+
+    $sql->execute([$postId, $reviewerId]);
+
+    echo json_encode(["success" => true]);
+    exit;
+}
+
+
+http_response_code(404);
+echo json_encode(["error" => "Neznámá akce."]);

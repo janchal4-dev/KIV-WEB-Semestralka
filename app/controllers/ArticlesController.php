@@ -25,7 +25,9 @@ class ArticlesController {
         // načti recenze
         foreach ($posts as &$p) {
             $p["reviews"] = $model->getReviewsForPost($p["id_post"]);
+            $p["assigned_reviewers"] = $model->getAssignedReviewers($p["id_post"]);
         }
+
 
         $app = new MyApplication();
         $app->renderTwig("articles.twig", [
