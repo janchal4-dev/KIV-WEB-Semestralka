@@ -14,6 +14,7 @@ class ComposerStaticInitde7d21b0543e14a272fdf2d04c45e359
         'ffecb95d45175fd40f75be8a23b34f90' => __DIR__ . '/..' . '/twig/twig/src/Resources/debug.php',
         'c7baa00073ee9c61edf148c51917cfb4' => __DIR__ . '/..' . '/twig/twig/src/Resources/escaper.php',
         'f844ccf1d25df8663951193c3fc307c8' => __DIR__ . '/..' . '/twig/twig/src/Resources/string_loader.php',
+        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -43,6 +44,16 @@ class ComposerStaticInitde7d21b0543e14a272fdf2d04c45e359
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'H' => 
+        array (
+            'HTMLPurifier' => 
+            array (
+                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
@@ -52,6 +63,7 @@ class ComposerStaticInitde7d21b0543e14a272fdf2d04c45e359
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitde7d21b0543e14a272fdf2d04c45e359::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitde7d21b0543e14a272fdf2d04c45e359::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitde7d21b0543e14a272fdf2d04c45e359::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitde7d21b0543e14a272fdf2d04c45e359::$classMap;
 
         }, null, ClassLoader::class);

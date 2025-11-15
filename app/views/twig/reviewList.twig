@@ -18,8 +18,8 @@
             <tbody>
             {% for post in posts %}
                 <tr>
-                    <td>{{ post.name }}</td>
-                    <td>{{ post.author_name }}</td>
+                    <td>{{ post.title }}</td>          {# alias z SQL #}
+                    <td>{{ post.author_name }}</td>    {# alias z SQL #}
                     <td>{{ post.date_uploaded|date("d.m.Y H:i") }}</td>
                     <td>
                         <a href="?page=review&id={{ post.id_post }}" class="btn btn-sm btn-outline-primary">
@@ -29,7 +29,9 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="4" class="text-center text-muted">Žádné články k recenzi.</td>
+                    <td colspan="4" class="text-center text-muted">
+                        Žádné články k recenzi.
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

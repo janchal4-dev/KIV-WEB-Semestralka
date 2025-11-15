@@ -190,4 +190,26 @@ class PostModel
         return $this->db->query($sql)->fetchAll();
     }
 
+
+    public function getPostsForReviewer(int $reviewerId): array
+    {
+        $sql = "
+        SELECT 
+            p.id_post,
+            p.name AS title,              -- alias pro název článku
+            p.date_uploaded,
+            u.name AS author_name         -- jméno autora
+        FROM post_reviewer pr
+        JOIN post p ON pr.post_id = p.id_post
+        JOIN user u ON p.author_id = u.id_user
+        WHERE pr.reviewer_id = ?
+        ORDER BY p.date_uploaded DESC
+    ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$reviewerId]);
+        return $stmt->fetchAll();
+    }
+
+
 }

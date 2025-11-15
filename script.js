@@ -138,6 +138,7 @@ class ReviewHandler {
         });
     }
 
+
     setRating(container, value) {
         const stars = container.querySelectorAll("i");
         stars.forEach((s, idx) => {
@@ -167,27 +168,44 @@ class ReviewHandler {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(body)
                 });
-                const data = await res.json();
+
+                const raw = await res.text();
+
+                console.log("RAW RESPONSE:", raw);
+                alert("RAW: " + raw);
+
+                let data;
+                try {
+                    data = JSON.parse(raw);
+                } catch (jsonErr) {
+                    alert("JSON error: " + jsonErr);
+                    console.error("JSON PARSE FAILED:", jsonErr);
+                    console.error("RAW WAS:", raw);
+                    return;
+                }
 
                 if (data.success) {
-                    alert("✅ Recenze uložena!");
+                    alert("Recenze uložena!");
                     location.href = "index.php?page=articles";
                 } else {
-                    alert("❌ " + (data.error || "Chyba při ukládání recenze."));
+                    alert("Chyba: " + (data.error || "Neznámá chyba"));
                 }
+
             } catch (err) {
-                console.error("Chyba při odeslání recenze:", err);
+                alert("FETCH ERROR: " + err);
+                console.error("FETCH FAIL:", err);
             }
+
         });
     }
 }
 
 // Automatická inicializace
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.querySelector(".review-form")) {
-        new ReviewHandler();
-    }
-});
+// document.addEventListener("DOMContentLoaded", () => {
+//     if (document.querySelector(".review-form")) {
+//         new ReviewHandler();
+//     }
+// });
 
 
 
