@@ -309,6 +309,36 @@ class ManagePosts {
 }
 
 
+class ManageReviews {
+    constructor() {
+        this.initStatusButtons();
+    }
+
+    initStatusButtons() {
+        document.addEventListener("click", async e => {
+            if (!e.target.classList.contains("review-status")) return;
+
+            const tr = e.target.closest("tr");
+            const reviewId = tr.dataset.id;
+            const status = e.target.dataset.status;
+
+            const res = await fetch("app/api/reviews.php/status", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ review_id: reviewId, published: status })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                location.reload();
+            } else {
+                alert("Nepodařilo se změnit stav.");
+            }
+        });
+    }
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
     if (document.querySelector(".user-settings-table")) {
@@ -321,5 +351,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (document.querySelector("table.manage-posts-table")) {
         new ManagePosts();
+    }
+
+    if (document.querySelector(".review-admin-table")) {
+        new ManageReviews();
     }
 });

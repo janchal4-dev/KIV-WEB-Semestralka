@@ -58,6 +58,14 @@
                     </li>
                 {% endif %}
 
+                {# Správa článků jen pro (super)adminy #}
+                {% if user.roles_id <= 2 %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ currentPage == 'manageReviews' ? 'active fw-bold' }}"
+                           href="?page=manageReviews">Správa recenzí</a>
+                    </li>
+                {% endif %}
+
 
             </ul>
 

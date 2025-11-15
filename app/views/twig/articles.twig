@@ -38,17 +38,36 @@
 
                                 <strong>Kvalita:</strong>
                                 {% for i in 1..r.rev_quality %}<span class="text-warning">★</span>{% endfor %}
-                                {% for i in 1..(5 - r.rev_quality) %}<span class="text-muted">☆</span>{% endfor %}
+
+                                {% set emptyStars = 5 - r.rev_quality %}
+                                {% if emptyStars > 0 %}
+                                    {% for i in 1..emptyStars %}
+                                        <span class="text-muted">☆</span>
+                                    {% endfor %}
+                                {% endif %}
+
                                 <br>
 
                                 <strong>Jazyk:</strong>
                                 {% for i in 1..r.rev_language %}<span class="text-warning">★</span>{% endfor %}
-                                {% for i in 1..(5 - r.rev_language) %}<span class="text-muted">☆</span>{% endfor %}
+
+                                {% set emptyStars = 5 - r.rev_language %}
+                                {% if emptyStars > 0 %}
+                                    {% for i in 1..emptyStars %}
+                                        <span class="text-muted">☆</span>
+                                    {% endfor %}
+                                {% endif %}
                                 <br>
 
                                 <strong>Originalita:</strong>
                                 {% for i in 1..r.rev_originality %}<span class="text-warning">★</span>{% endfor %}
-                                {% for i in 1..(5 - r.rev_originality) %}<span class="text-muted">☆</span>{% endfor %}
+
+                                {% set emptyStars = 5 - r.rev_originality %}
+                                {% if emptyStars > 0 %}
+                                    {% for i in 1..emptyStars %}
+                                        <span class="text-muted">☆</span>
+                                    {% endfor %}
+                                {% endif %}
                                 <br>
 
                                 <strong>Komentář:</strong>

@@ -23,6 +23,7 @@ class ManagePostsController {
             $p["assigned_reviewers"] = $postModel->getAssignedReviewers($p["id_post"]);
         }
 
+
         $app = new MyApplication();
         $app->renderTwig("managePosts.twig", [
             "currentPage" => "managePosts",

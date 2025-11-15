@@ -1,0 +1,76 @@
+{% extends "base.twig" %}
+
+{% block title %}Správa recenzí{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-4">Správa recenzí</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped review-admin-table">
+            <thead>
+            <tr>
+                <th>Článek</th>
+                <th>PDF</th>
+                <th>Autor článku</th>
+                <th>Recenzent</th>
+                <th>Hodnocení</th>
+                <th>Komentář</th>
+                <th>Datum</th>
+                <th>Stav</th>
+                <th>Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for r in reviews %}
+                <tr data-id="{{ r.id_review }}">
+
+                    <td>{{ r.post_name }}</td>
+
+                    <td>
+                        <a href="uploads/{{ r.file_path }}"
+                           target="_blank"
+                           class="btn btn-outline-secondary btn-sm">
+                            PDF
+                        </a>
+                    </td>
+
+                    <td>{{ r.author_name }}</td>
+                    <td>{{ r.reviewer_name }}</td>
+
+                    <td>
+                        Kvalita: {{ r.rev_quality }}<br>
+                        Jazyk: {{ r.rev_language }}<br>
+                        Originalita: {{ r.rev_originality }}
+                    </td>
+
+                    <td>{{ r.comment|raw }}</td>
+
+                    <td>{{ r.date_created|date("d.m.Y H:i") }}</td>
+
+                    <td>
+                        {% if r.published == 2 %}
+                            <span class="badge bg-success">Schválená</span>
+                        {% elseif r.published == 3 %}
+                            <span class="badge bg-danger text-dark">Zamítnuta</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Čeká</span>
+                        {% endif %}
+                    </td>
+
+
+                    <td>
+                        <button class="btn btn-success btn-sm review-status" data-status="2">Schválit</button>
+                        <button class="btn btn-danger btn-sm review-status" data-status="3">Zamítnout</button>
+
+                    </td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

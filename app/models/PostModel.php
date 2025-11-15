@@ -145,10 +145,19 @@ class PostModel
         return $stmt->execute([$name, $uniqueFileName, $authorId]);
     }
 
-    public function getAllPosts(): array
-    {
-        return $this->db->query("SELECT * FROM post ORDER BY date_uploaded DESC")->fetchAll();
+    public function getAllPosts(): array {
+        $sql = "
+        SELECT 
+            p.*, 
+            u.name AS author_name
+        FROM post p
+        JOIN user u ON p.author_id = u.id_user
+        ORDER BY p.date_uploaded DESC
+    ";
+
+        return $this->db->query($sql)->fetchAll();
     }
+
 
     public function getPostById(int $id): ?array
     {
