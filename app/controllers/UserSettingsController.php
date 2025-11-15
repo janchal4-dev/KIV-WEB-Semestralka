@@ -26,4 +26,8 @@ class UserSettingsController {
             "users" => $users
         ]);
     }
+
+
+
+
 }

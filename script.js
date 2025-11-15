@@ -159,7 +159,7 @@ class ReviewHandler {
                 rev_quality: document.getElementById("rev_quality").value,
                 rev_language: document.getElementById("rev_language").value,
                 rev_originality: document.getElementById("rev_originality").value,
-                comment: CKEDITOR.instances.reviewComment.getData()
+                comment: CKEDITOR.instances.reviewComment.getData(),
             };
 
             try {
@@ -170,9 +170,6 @@ class ReviewHandler {
                 });
 
                 const raw = await res.text();
-
-                console.log("RAW RESPONSE:", raw);
-                alert("RAW: " + raw);
 
                 let data;
                 try {

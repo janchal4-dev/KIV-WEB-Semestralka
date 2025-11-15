@@ -58,15 +58,13 @@
                     {# 🔹 AKCE #}
                     <td class="actions-cell text-center">
                         {% if u.blocked %}
-                            {% if (user.roles_id <= 2) and (u.id_user != user.id_user) %}
+                            {% if (user.roles_id <= 2) and (u.roles_id > user.roles_id) %}
                                 <button class="btn btn-sm btn-outline-success unblock-btn">
                                     Odblokovat
                                 </button>
                             {% endif %}
                         {% else %}
-                            {% if ((user.roles_id == 1 and u.roles_id != 1) or
-                                (user.roles_id == 2 and u.roles_id > 2))
-                                and (u.id_user != user.id_user) %}
+                            {% if (user.roles_id <= 2)and (u.roles_id > user.roles_id) %}
                                 <button class="btn btn-sm btn-outline-danger block-btn">
                                     Zakázat
                                 </button>

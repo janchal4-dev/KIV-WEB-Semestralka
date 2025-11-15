@@ -64,7 +64,7 @@ class UserModel {
     // vrátí věšechny uživatele a názvy jejich role
     public function getAllUsers() {
         $stmt = $this->db->query("
-        SELECT u.id_user, u.username, u.name, u.email, u.blocked, r.role_name
+        SELECT u.id_user, u.username, u.name, u.email, u.blocked, r.role_name, u.roles_id
         FROM user u
         JOIN roles r ON u.roles_id = r.id_role
         ORDER BY r.id_role ASC, u.username ASC
