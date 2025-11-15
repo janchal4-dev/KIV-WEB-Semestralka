@@ -11,10 +11,9 @@ class PostModel
 
 
     // vrátí článek i s recenzema
-    public function getPostsWithReviews(?int $filterUserId = null, ?int $role = null): array
-    {
+    public function getPostsWithReviews(?int $filterUserId = null, ?int $role = null): array {
 
-        // ADMIN/SUPERADMIN → vidí vše
+        // ADMIN (1) / SUPERADMIN (2) → vidí všechno
         if ($role === 1 || $role === 2) {
             $sql = "SELECT p.*, u.name AS author_name
                 FROM post p
@@ -23,7 +22,20 @@ class PostModel
             return $this->db->query($sql)->fetchAll();
         }
 
-        // AUTOR → vidí vlastní články
+        // RECENZENT (3) → vidí jen přidělené články, bez ohledu na status
+        if ($role === 3) {
+            $sql = "SELECT p.*, u.name AS author_name
+                FROM post p
+                JOIN post_reviewer r ON p.id_post = r.post_id
+                JOIN user u ON p.author_id = u.id_user
+                WHERE r.reviewer_id = ?
+                ORDER BY p.date_uploaded DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$filterUserId]);
+            return $stmt->fetchAll();
+        }
+
+        // AUTOR (4) → vidí jen své články (bez ohledu na status)
         if ($role === 4) {
             $sql = "SELECT p.*, u.name AS author_name
                 FROM post p
@@ -35,20 +47,14 @@ class PostModel
             return $stmt->fetchAll();
         }
 
-        // RECENZENT → vidí jen články, které má přidělené
-        if ($role === 3) {
-            $sql = "SELECT p.*, u.name AS author_name
-                FROM post p
-                JOIN review_assignment a ON p.id_post = a.post_id
-                JOIN user u ON p.author_id = u.id_user
-                WHERE a.reviewer_id = ?
-                ORDER BY p.date_uploaded DESC";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$filterUserId]);
-            return $stmt->fetchAll();
-        }
-
-        return [];
+        // VEŘEJNÉ ZOBRAZENÍ (role 5? nebo neregistrovaný)
+        // → ukázat jen SCHVÁLENÉ články
+        $sql = "SELECT p.*, u.name AS author_name
+            FROM post p
+            JOIN user u ON p.author_id = u.id_user
+            WHERE p.status_id = 2
+            ORDER BY p.date_uploaded DESC";
+        return $this->db->query($sql)->fetchAll();
     }
 
 
@@ -173,5 +179,15 @@ class PostModel
         return $stmt->execute([$statusId, $postId]);
     }
 
+
+
+    public function getApprovedPosts(): array {
+        $sql = "SELECT p.*, u.name AS author_name
+            FROM post p
+            JOIN user u ON p.author_id = u.id_user
+            WHERE p.status_id = 2
+            ORDER BY p.date_uploaded DESC";
+        return $this->db->query($sql)->fetchAll();
+    }
 
 }

@@ -121,7 +121,6 @@ class ReviewHandler {
     }
 
     initStars() {
-        alert("Baf");
         document.querySelectorAll(".rating").forEach(rating => {
             const field = rating.dataset.field;
             for (let i = 1; i <= 5; i++) {
