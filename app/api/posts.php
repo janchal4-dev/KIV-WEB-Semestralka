@@ -22,7 +22,12 @@ if ($user["roles_id"] > 2) {
 
 $method = $_SERVER["REQUEST_METHOD"];
 $uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
-$action = $uri[array_key_last($uri)];
+//$action = $uri[array_key_last($uri)];
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$parts = explode("/", trim($path, "/"));
+$action = end($parts);
+
+
 
 $model = new PostModel();
 
@@ -76,6 +81,38 @@ if ($action === "assign" && $method === "POST") {
     echo json_encode(["success" => true]);
     exit;
 }
+
+
+
+// -----------------------------------------
+// ❌ 3) ODEBRÁNÍ RECENZENTA
+// POST /api/posts/unassign
+// -----------------------------------------
+if ($action === "unassign" && $method === "POST") {
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $postId = intval($data["post_id"] ?? 0);
+    $reviewerId = intval($data["reviewer_id"] ?? 0);
+
+    if (!$postId || !$reviewerId) {
+        http_response_code(400);
+        echo json_encode(["error" => "Chybí data."]);
+        exit;
+    }
+
+    $sql = getDB()->prepare("
+        DELETE FROM post_reviewer
+        WHERE post_id = ? AND reviewer_id = ?
+    ");
+
+    $ok = $sql->execute([$postId, $reviewerId]);
+
+    echo json_encode(["success" => $ok]);
+    exit;
+}
+
+
 
 
 http_response_code(404);

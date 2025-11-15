@@ -18,6 +18,11 @@ class ManagePostsController {
         $posts = $postModel->getAllPosts();
         $reviewers = $userModel->getReviewers(); // users s role_id = 3
 
+        foreach ($posts as &$p) {
+            // 📌 TADY je to správně – taháme reviewery z PostModelu
+            $p["assigned_reviewers"] = $postModel->getAssignedReviewers($p["id_post"]);
+        }
+
         $app = new MyApplication();
         $app->renderTwig("managePosts.twig", [
             "currentPage" => "managePosts",

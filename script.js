@@ -196,6 +196,7 @@ class ManagePosts {
     constructor() {
         this.initStatusButtons();
         this.initAssignButtons();
+        this.initUnassignButtons();
     }
 
     // změna statusu
@@ -250,11 +251,44 @@ class ManagePosts {
                 const msg = tr.querySelector(".reviewer-msg");
                 msg.textContent = "Recenzent přiřazen";
                 msg.classList.remove("d-none");
+                location.reload();
             } else {
                 alert(data.error || "Chyba");
             }
         });
     }
+
+    // odebrání recenzenta
+    initUnassignButtons() {
+        document.addEventListener("click", async (e) => {
+
+            const btn = e.target.closest(".unassign-btn");
+            if (!btn) return;
+
+            const tr = btn.closest("tr");
+            const postId = tr.dataset.id;
+            const reviewerId = btn.dataset.reviewer;
+
+            if (!confirm("Opravdu odebrat recenzenta?")) return;
+
+            const res = await fetch("app/api/posts.php/unassign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ post_id: postId, reviewer_id: reviewerId })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                btn.closest("li").remove();
+            } else {
+                alert(data.error || "Chyba při odebírání recenzenta.");
+            }
+        });
+    }
+
+
+
 }
 
 

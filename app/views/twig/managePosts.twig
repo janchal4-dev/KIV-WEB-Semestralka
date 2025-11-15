@@ -5,7 +5,7 @@
 {% block content %}
 
     <h1>Správa článků</h1>
-
+    <div class="table-responsive">
     <table class="table table-striped manage-posts-table">
     <thead>
         <tr>
@@ -53,15 +53,26 @@
 
 
 
-                    {% if p.assigned_reviewers is not empty %}
+                    {% if p.assigned_reviewers %}
                         <div class="mt-2">
-                            <small class="text-muted">Již přiřazeni:</small><br>
-
-                            {% for r in p.assigned_reviewers %}
-                                <span class="badge bg-secondary me-1">{{ r.name }}</span>
-                            {% endfor %}
+                            <strong>Přiřazení recenzenti:</strong>
+                            <ul class="mt-1">
+                                {% for r in p.assigned_reviewers %}
+                                    <li>
+                                        {{ r.name }}
+                                        <button
+                                                class="btn btn-sm btn-outline-danger unassign-btn"
+                                                data-reviewer="{{ r.id_user }}">
+                                            Odebrat
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
+                    {% else %}
+                        <p class="text-muted mt-2">Zatím nikdo nepřiřazen.</p>
                     {% endif %}
+
 
                 </td>
             </tr>
@@ -69,5 +80,6 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 {% endblock %}
