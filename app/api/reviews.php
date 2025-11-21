@@ -50,7 +50,9 @@ if ($action === "reviews.php" && $method === "POST") {
     $purifier = new HTMLPurifier($config);
     $commentClean = $purifier->purify($commentRaw);
 
-    $ok = $model->createReview($postId, $user["id_user"], $q, $l, $o, $commentClean);
+    //$ok = $model->createReview($postId, $user["id_user"], $q, $l, $o, $commentClean);
+    $ok = $model->createOrUpdateReview($postId, $user["id_user"], $q, $l, $o, $commentClean);
+
 
     echo json_encode(["success" => $ok]);
     exit;

@@ -25,21 +25,16 @@
                     <td>{{ u.email }}</td>
 
                     <td>
-                        {# Hierarchie rolí - aby mohli upravovat jen ty pod sebou #}
-                        {% if user.roles_id == 1 and u.role_name != 'SuperAdmin' %}
+{#                         Hierarchie rolí - aby mohli upravovat jen ty pod sebou#}
+
+                        {% if u.can_edit_role %}
                             <select class="form-select form-select-sm role-select">
-                                <option value="2" {% if u.role_name == 'Admin' %}selected{% endif %}>Admin</option>
-                                <option value="3" {% if u.role_name == 'Recenzent' %}selected{% endif %}>Recenzent</option>
-                                <option value="4" {% if u.role_name == 'Autor' %}selected{% endif %}>Autor</option>
+                                {% if user.roles_id == 1 %}
+                                    <option value="2" {% if u.roles_id == 2 %}selected{% endif %}>Admin</option>
+                                {% endif %}
+                                <option value="3" {% if u.roles_id == 3 %}selected{% endif %}>Recenzent</option>
+                                <option value="4" {% if u.roles_id == 4 %}selected{% endif %}>Autor</option>
                             </select>
-
-
-                        {% elseif user.roles_id == 2 and u.role_name not in ['SuperAdmin', 'Admin'] %}
-                            <select class="form-select form-select-sm role-select">
-                                <option value="3" {% if u.role_name == 'Recenzent' %}selected{% endif %}>Recenzent</option>
-                                <option value="4" {% if u.role_name == 'Autor' %}selected{% endif %}>Autor</option>
-                            </select>
-
 
                         {% else %}
                             <strong>{{ u.role_name }}</strong>
@@ -55,22 +50,16 @@
                         {% endif %}
                     </td>
 
-                    {# 🔹 AKCE #}
-                    <td class="actions-cell text-center">
-                        {% if u.blocked %}
-                            {% if (user.roles_id <= 2) and (u.roles_id > user.roles_id) %}
-                                <button class="btn btn-sm btn-outline-success unblock-btn">
-                                    Odblokovat
-                                </button>
-                            {% endif %}
+                    <td class="text-center">
+                        {% if u.can_unblock %}
+                            <button class="btn btn-sm btn-outline-success unblock-btn">Odblokovat</button>
+                        {% elseif u.can_block %}
+                            <button class="btn btn-sm btn-outline-danger block-btn">Zakázat</button>
                         {% else %}
-                            {% if (user.roles_id <= 2)and (u.roles_id > user.roles_id) %}
-                                <button class="btn btn-sm btn-outline-danger block-btn">
-                                    Zakázat
-                                </button>
-                            {% endif %}
+                            –
                         {% endif %}
                     </td>
+
                 </tr>
             {% endfor %}
             </tbody>

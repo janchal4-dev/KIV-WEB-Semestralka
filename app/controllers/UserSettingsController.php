@@ -14,9 +14,40 @@ class UserSettingsController {
             header("Location: index.php?page=login");
             exit;
         }
-
+        $current = $_SESSION["user"];
         $model = new UserModel();
         $users = $model->getAllUsers();
+
+        foreach ($users as &$u) {
+
+            // Výchozí nastavení
+            $u["can_edit_role"] = false;
+            $u["can_block"] = false;
+            $u["can_unblock"] = false;
+
+            // SuperAdmin = role 1
+            if ($current["roles_id"] == 1) {
+
+                if ($u["roles_id"] != 1) {
+                    $u["can_edit_role"] = true;
+                    if ($u["blocked"]) $u["can_unblock"] = true;
+                    else $u["can_block"] = true;
+                }
+
+            }
+
+            // Admin = role 2
+            if ($current["roles_id"] == 2) {
+
+                // Admin může měnit role jen u uživatelů 3 a 4
+                if ($u["roles_id"] > 2) {
+                    $u["can_edit_role"] = true;
+                    if ($u["blocked"]) $u["can_unblock"] = true;
+                    else $u["can_block"] = true;
+                }
+
+            }
+        }
 
         // Vykreslení šablony
         $app = new MyApplication();
