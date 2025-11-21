@@ -1,48 +1,8 @@
 <?php
-//
-//class RegistrationController {
-//
-//    public function render()
-//    {
-//        $app = new MyApplication();
-//        $app->renderTwig("registration.twig", [
-//            "currentPage" => "registration",
-//            "user" => $_SESSION["user"] ?? null
-//        ]);
-//    }
-//}
-
-
 require_once MODEL_PATH . "/UserModel.php";
 
 class RegistrationController
 {
-
-//    public function render()
-//    {
-//
-//        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-//
-//            $model = new UserModel();
-//
-//            $username = trim($_POST["username"]);
-//            $name = trim($_POST["name"]);
-//            $email = trim($_POST["email"]);
-//            $password = trim($_POST["password"]);
-//
-//            if ($model->register($username, $name, $email, $password)) {
-//                header("Location: index.php?page=login&registered=1");
-//                exit;
-//            }
-//
-//            $error = "Uživatel se nepodařilo vytvořit.";
-//        }
-//
-//        (new MyApplication())->renderTwig("registration.twig", [
-//            "currentPage" => "registration",
-//            "error" => $error ?? null
-//        ]);
-//    }
     public function render()
     {
 

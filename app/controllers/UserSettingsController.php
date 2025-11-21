@@ -14,6 +14,12 @@ class UserSettingsController {
             header("Location: index.php?page=login");
             exit;
         }
+        // jen pro (super)adminy
+        if ($_SESSION["user"]["roles_id"] > 2) {
+        header("Location: index.php?page=home");
+        exit;
+    }
+
         $current = $_SESSION["user"];
         $model = new UserModel();
         $users = $model->getAllUsers();

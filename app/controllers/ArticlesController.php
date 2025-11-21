@@ -9,10 +9,6 @@ class ArticlesController {
 
         if (session_status() === PHP_SESSION_NONE) session_start();
 
-//        if (empty($_SESSION["user"])) {
-//            header("Location: index.php?page=login");
-//            exit;
-//        }
         $user = $_SESSION["user"] ?? null;
 
         $model = new PostModel();
@@ -20,10 +16,6 @@ class ArticlesController {
         // pouze SCHVÁLENÉ články pro každého
         $posts = $model->getApprovedPosts();
 
-        // načti recenze k článkům
-//        foreach ($posts as &$p) {
-//            $p["reviews"] = $model->getReviewsForPost($p["id_post"]);
-//        }
 
         $reviewM = new ReviewModel();
         foreach ($posts as &$p) {

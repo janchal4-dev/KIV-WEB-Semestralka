@@ -19,7 +19,7 @@ class ManagePostsController {
         $reviewers = $userModel->getReviewers(); // users s role_id = 3
 
         foreach ($posts as &$p) {
-            // 📌 TADY je to správně – taháme reviewery z PostModelu
+            // vytahnutí reviewerů z PostModelu
             $p["assigned_reviewers"] = $postModel->getAssignedReviewers($p["id_post"]);
         }
 

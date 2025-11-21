@@ -1,9 +1,0 @@
-Array
-(
-    [0] => KIV-WEB
-    [1] => kiv_web_semestralka
-    [2] => app
-    [3] => api
-    [4] => posts.php
-    [5] => unassign
-)

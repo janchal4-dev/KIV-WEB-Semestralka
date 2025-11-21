@@ -7,15 +7,7 @@ class ReviewModel {
         $this->db = getDB();
     }
 
-    // ✔️ Tvoje metoda pro vytvoření recenze (neměníme)
-    public function createReview($postId, $userId, $q, $l, $o, $comment): bool {
-        $sql = "INSERT INTO review (post_id, user_id, rev_quality, rev_language, rev_originality, comment, date_created, published)
-                VALUES (?, ?, ?, ?, ?, ?, NOW(), 0)";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$postId, $userId, $q, $l, $o, $comment]);
-    }
-
-//     ✔️ 1) Načtení všech recenzí (pro admina / superadmina)
+    // vrátí recenze
     public function getAllReviews(): array {
         $sql = "SELECT r.*,
        u.name AS reviewer_name,
@@ -30,22 +22,7 @@ ORDER BY r.date_created DESC
 ";
         return $this->db->query($sql)->fetchAll();
     }
-
-    // ✔️ 2) Načtení recenzí jednoho článku (pokud budeš potřebovat)
-    public function getReviewsForPost(int $postId): array {
-        $sql = "
-            SELECT r.*, u.name AS reviewer_name
-            FROM review r
-            JOIN user u ON r.user_id = u.id_user
-            WHERE r.post_id = ?
-            ORDER BY r.date_created DESC
-        ";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$postId]);
-        return $stmt->fetchAll();
-    }
-
-    // ✔️ 3) Aktualizace statusu recenze (0 čeká, 1 schválena, 2 zamítnuta)
+    // změní stav recenze když do toho admin hrábne
     public function updateReviewStatus(int $reviewId, int $status): bool {
         $sql = "
             UPDATE review
@@ -74,13 +51,13 @@ ORDER BY r.date_created DESC
     // vytvoření nebo úprava recenze
     public function createOrUpdateReview($postId, $userId, $q, $l, $o, $comment): bool {
 
-        // 1️⃣ Zjisti, jestli recenze už existuje
+        // 1) Zjisti, jestli recenze už existuje
         $sql = "SELECT id_review FROM review WHERE post_id = ? AND user_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$postId, $userId]);
         $existing = $stmt->fetch();
 
-        // 2️⃣ UPDATE existující recenze
+        // 2️) UPDATE existující recenze
         if ($existing) {
             $sql = "UPDATE review 
                 SET rev_quality = ?, rev_language = ?, rev_originality = ?, 
@@ -90,7 +67,7 @@ ORDER BY r.date_created DESC
             return $stmt->execute([$q, $l, $o, $comment, $existing["id_review"]]);
         }
 
-        // 3️⃣ INSERT nové recenze
+        // 3)  INSERT nové recenze
         $sql = "INSERT INTO review 
             (post_id, user_id, rev_quality, rev_language, rev_originality, comment, date_created, published)
             VALUES (?, ?, ?, ?, ?, ?, NOW(), 0)";

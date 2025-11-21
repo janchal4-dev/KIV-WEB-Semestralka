@@ -97,23 +97,20 @@
                     </li>
 
                 {% else %}
-{#              zobrazení loginu jména#}
+                    {#              zobrazení loginu jména#}
                     <li class="nav-item">
-{#            <span class="navbar-text me-2">#}
-{#                👤 {{ user.username }}#}
-{#            </span>#}
                     <li class="nav-item d-flex align-items-center">
     <span class="navbar-text me-3 d-flex align-items-center">
         <i class="bi bi-person-circle me-1 text-light" style="font-size: 1.3rem;"></i>
         {{user.username }}
     </span>
                     </li>
-
+                {% if user and (user.roles_id == 1 or user.roles_id == 2)   %}
                     <li class="nav-item d-flex align-items-center">
                         <a class="nav-link accountLink {{ currentPage == 'userSettings' ? 'active fw-bold' }}"
-                           href="?page=userSettings">Účet</a>
+                           href="?page=userSettings">Správa uživatelů</a>
                     </li>
-
+                    {% endif  %}
 {#                logout#}
                     <li class="nav-item d-flex align-items-center">
                         <a class="nav-link text-danger fw-bold" href="?page=logout">Logout</a>

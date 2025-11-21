@@ -5,12 +5,13 @@ require_once __DIR__ . "/../models/PostModel.php";
 header("Content-Type: application/json");
 session_start();
 
+// kontrola přihlášení
 if (!isset($_SESSION["user"])) {
     http_response_code(401);
     echo json_encode(["error" => "Nejste přihlášen."]);
     exit;
 }
-
+// uložení dat usera
 $user = $_SESSION["user"];
 
 // povoleno jen adminům a superadminům
@@ -25,15 +26,14 @@ $uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
 //$action = $uri[array_key_last($uri)];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $parts = explode("/", trim($path, "/"));
+
+// poslední kousek url dělá akci
 $action = end($parts);
 
-
-
+// komunikace s DB
 $model = new PostModel();
 
-// =============================
-// 🔵 1) ZMĚNA STATUSU
-// =============================
+// změna statusu
 if ($action === "status" && $method === "POST") {
 
     $data = json_decode(file_get_contents("php://input"), true);
@@ -54,9 +54,7 @@ if ($action === "status" && $method === "POST") {
 }
 
 
-// =============================
-// 🟢 2) PŘIŘAZENÍ RECENZENTA
-// =============================
+// přidání recenzenta k článku
 if ($action === "assign" && $method === "POST") {
 
     $data = json_decode(file_get_contents("php://input"), true);
@@ -84,10 +82,7 @@ if ($action === "assign" && $method === "POST") {
 
 
 
-// -----------------------------------------
-// ❌ 3) ODEBRÁNÍ RECENZENTA
-// POST /api/posts/unassign
-// -----------------------------------------
+// odebrání recenzenta
 if ($action === "unassign" && $method === "POST") {
 
     $data = json_decode(file_get_contents("php://input"), true);
@@ -114,6 +109,6 @@ if ($action === "unassign" && $method === "POST") {
 
 
 
-
+//  jinak nic nespustí a vyvolá error
 http_response_code(404);
 echo json_encode(["error" => "Neznámá akce."]);

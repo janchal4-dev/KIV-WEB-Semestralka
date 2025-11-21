@@ -18,7 +18,7 @@ class LoginController {
                 exit;
             }
 
-            // ✅ Úspěch
+            // když se povede
             $_SESSION["user"] = $user;
             header("Location: index.php?page=home");
             exit;

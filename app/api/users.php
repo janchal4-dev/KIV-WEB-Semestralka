@@ -14,13 +14,14 @@ if (empty($_SESSION["user"])) {
 $user = $_SESSION["user"];
 $model = new UserModel();
 
-// URL parsing (např. /api/users/5 → ["", "api", "users", "5"])
+// URL parsing
 $uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
 $id = $uri[count($uri) - 1] ?? null;
 
+// switch na požadavek
 switch ($_SERVER["REQUEST_METHOD"]) {
 
-    // 🟢 GET /api/users
+    // získání seznamu všech uživatelů
     case "GET":
         if ($user["roles_id"] > 2) {
             http_response_code(403);
@@ -31,7 +32,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         echo json_encode($model->getAllUsers());
         break;
 
-    // 🟡 PUT /api/users/{id}  → změna role
+    //změna role
     case "PUT":
         if (!isset($id)) {
             http_response_code(400);
@@ -57,7 +58,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             exit;
         }
 
-        // ⚠️ Bezpečnostní logika:
+        // ️ Bezpečnostní logika:
         // Admin (role_id=2) nesmí měnit SuperAdmina ani Admina
         if ($user["roles_id"] == 2 && $target["roles_id"] <= 2) {
             http_response_code(403);
@@ -78,7 +79,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         break;
 
 
-    // DELETE /api/users/{id}  → blokace
+    // blokace uživatele
     case "DELETE":
         if (!isset($id)) {
             http_response_code(400);

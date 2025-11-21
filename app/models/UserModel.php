@@ -10,8 +10,13 @@ class UserModel {
     }
 
     public function register($username, $name, $email, $password): bool {
+        //️ ochrana proti XSS
+        $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-        // ✅ nejdřív ověřit zda username nebo email existuje
+
+        // nejdřív ověření že username nebo email existuje
         $check = $this->db->prepare("SELECT id_user FROM user WHERE username = ? OR email = ?");
         $check->execute([$username, $email]);
 
@@ -19,8 +24,9 @@ class UserModel {
             return false; // už existuje → neprovádět insert
         }
 
+
         $sql = "INSERT INTO user (username, name, email, password, roles_id, blocked)
-            VALUES (?, ?, ?, ?, 1, 0)";
+            VALUES (?, ?, ?, ?, 3, 0)";
 
         $stmt = $this->db->prepare($sql);
 
@@ -33,6 +39,10 @@ class UserModel {
     }
 
     public function login($username, $password) {
+        //️ ochrana proti XSS
+        $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
+        $password = htmlspecialchars($password, ENT_QUOTES, 'UTF-8');
+
         $stmt = $this->db->prepare("SELECT * FROM user WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
@@ -46,14 +56,14 @@ class UserModel {
         }
 
         // pro ten bcrypt
-//    if (!password_verify($password, $user["password"])) {
-//        return ["error" => "wrong_password"];
-//    }
-
-        // testování
-        if ($password !== $user["password"]) {
+        if (!password_verify($password, $user["password"])) {
             return ["error" => "wrong_password"];
         }
+
+        // testování
+//        if ($password !== $user["password"]) {
+//            return ["error" => "wrong_password"];
+//        }
 
         return $user;
     }
@@ -105,12 +115,6 @@ class UserModel {
             ORDER BY name";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
-    }
-
-
-    public function getAuthors(): array {
-        $sql = "SELECT id_user, username, name FROM user WHERE roles_id = 4 AND blocked = 0";
-        return $this->db->query($sql)->fetchAll();
     }
 
 

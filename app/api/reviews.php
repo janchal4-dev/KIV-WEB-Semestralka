@@ -15,19 +15,14 @@ if (empty($_SESSION["user"])) {
 $user = $_SESSION["user"];
 $method = $_SERVER["REQUEST_METHOD"];
 
-// ========================
-// 🔵 ZJIŠTĚNÍ AKCE Z URL
-// např. /api/reviews.php/status
-// ========================
+// zjištení akce z urlka
 $uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
 $action = $uri[array_key_last($uri)];
 
 $model = new ReviewModel();
 
 
-// =======================================
-// 1️⃣ RECENZENT PÍŠE RECENZI (POST)
-// =======================================
+// recenzi píše recenzent
 if ($action === "reviews.php" && $method === "POST") {
 
     if ($user["roles_id"] != 3) {
@@ -39,13 +34,14 @@ if ($action === "reviews.php" && $method === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
     $postId = $data["post_id"] ?? null;
-
+    // hodnocení hvězdama když nula tak nula
     $q = (int)($data["rev_quality"] ?? 0);
     $l = (int)($data["rev_language"] ?? 0);
     $o = (int)($data["rev_originality"] ?? 0);
+    // komentář
     $commentRaw = $data["comment"] ?? "";
 
-    // 💡 HTMLPurifier
+    // 💡 HTMLPurifier - čistí od útoků
     $config = HTMLPurifier_Config::createDefault();
     $purifier = new HTMLPurifier($config);
     $commentClean = $purifier->purify($commentRaw);
@@ -59,10 +55,7 @@ if ($action === "reviews.php" && $method === "POST") {
 }
 
 
-// =======================================
-// 2️⃣ ADMIN SCHVALUJE / ZAMÍTÁ RECENZI
-// /api/reviews.php/status
-// =======================================
+// recenze schvalována / zamítána adminem
 if ($action === "status" && $method === "POST") {
 
     if ($user["roles_id"] > 2) {
@@ -74,7 +67,7 @@ if ($action === "status" && $method === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
     $reviewId = intval($data["review_id"] ?? 0);
-    $published = intval($data["published"] ?? 0);
+    $published = intval($data["published"] ?? 0); // boolean 0 nebo 1
 
     if (!$reviewId) {
         http_response_code(400);
@@ -88,8 +81,6 @@ if ($action === "status" && $method === "POST") {
 }
 
 
-// =======================================
-// ❌ NIC NESPOUŠTÍ → 404
-// =======================================
+//  jinak nic nespustí a vyvolá error
 http_response_code(404);
 echo json_encode(["error" => "Neznámá akce."]);
