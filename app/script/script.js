@@ -382,7 +382,7 @@ class HomeAnimation{
                 }
             });
         }, {
-            threshold: 0.4
+            threshold: 0.2
         });
 
         cards.forEach(card => observer.observe(card));

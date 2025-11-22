@@ -31,6 +31,11 @@ class ReviewListController
         $posts   = $postModel->getPostsForReviewer($user["id_user"]);
         $reviews = $reviewModel->getReviewsByReviewer($user["id_user"]);
 
+        foreach ($posts as &$p) {
+            $p["my_review"] = $reviewModel->getReviewByUserAndPost($user["id_user"], $p["id_post"]);
+        }
+        unset($p);
+
         $app->renderTwig("reviewList.twig", [
             "user"        => $user,
             "currentPage" => "reviewList",

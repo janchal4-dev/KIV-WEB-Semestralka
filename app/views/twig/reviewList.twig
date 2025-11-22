@@ -22,16 +22,19 @@
                     <td>{{ post.author_name }}</td>    {# alias z SQL #}
                     <td>{{ post.date_uploaded|date("d.m.Y H:i") }}</td>
                     <td>
-                        {% if r.published == 2 %}
+                        {% if post.my_review and post.my_review.published == 2 %}
                             <span class="badge bg-success">Schváleno – nelze upravit</span>
+
+                        {% elseif post.my_review and post.my_review.published == 1 %}
+                            <span class="badge bg-danger">Zamítnuto – nelze upravit</span>
+
                         {% else %}
                             <a href="?page=review&id={{ post.id_post }}" class="btn btn-sm btn-outline-primary">
                                 ✏️ Upravit / napsat recenzi
                             </a>
-
                         {% endif %}
-
                     </td>
+
                 </tr>
             {% else %}
                 <tr>

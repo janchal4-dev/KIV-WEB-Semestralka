@@ -22,14 +22,34 @@ class PostModel
     }
 
 
-    public function createPost(string $name, string $uniqueFileName, int $authorId): bool
+    public function createPost(string $name, string $uniqueFileName, int $authorId, string $abstract): bool
     {
-        $sql = "INSERT INTO post (name, file_path, author_id, status_id, date_uploaded)
-                VALUES (?, ?, ?, 1, NOW())";
+        $sql = "INSERT INTO post (name, file_path, author_id, status_id, date_uploaded, abstract)
+            VALUES (?, ?, ?, 1, NOW(), ?)";
 
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$name, $uniqueFileName, $authorId]);
+        return $stmt->execute([$name, $uniqueFileName, $authorId, $abstract]);
     }
+
+    public function updatePost(int $postId, string $title, string $abstract, ?string $newFile): bool
+    {
+        if ($newFile) {
+            $sql = "UPDATE post 
+                SET name = ?, abstract = ?, file_path = ?, date_changed = NOW() 
+                WHERE id_post = ?";
+            $params = [$title, $abstract, $newFile, $postId];
+        } else {
+            $sql = "UPDATE post 
+                SET name = ?, abstract = ?, date_changed = NOW() 
+                WHERE id_post = ?";
+            $params = [$title, $abstract, $postId];
+        }
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
+    }
+
+
 
     // vrací všechny bez ohlkedu na stav
     public function getAllPosts(): array {
@@ -105,6 +125,15 @@ class PostModel
         $stmt->execute([$authorId]);
         return $stmt->fetchAll();
     }
+
+    public function deletePost(int $postId, int $authorId): bool {
+        $sql = "DELETE FROM post WHERE id_post = ? AND author_id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$postId, $authorId]);
+    }
+
+
+
 
 
 }

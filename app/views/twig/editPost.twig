@@ -1,0 +1,32 @@
+{% extends "base.twig" %}
+
+{% block title %}Upravit článek{% endblock %}
+{% block content %}
+    <h1>Upravit článek</h1>
+
+    <form method="post" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label>Název</label>
+            <input class="form-control" name="name" value="{{ post.name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Abstrakt</label>
+            <textarea id="abstract" name="abstract">{{ post.abstract }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Nový PDF soubor (volitelné)</label>
+            <input class="form-control" type="file" name="file">
+        </div>
+
+        <button class="btn btn-success">Uložit změny</button>
+    </form>
+
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace("abstract");
+    </script>
+
+{% endblock %}

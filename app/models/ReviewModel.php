@@ -106,9 +106,25 @@ ORDER BY r.date_created DESC
         return $stmt->fetch();
     }
 
+    public function getReviewsForPost(int $postId): array {
+        $sql = "
+        SELECT r.*, u.name AS reviewer_name
+        FROM review r
+        JOIN user u ON r.user_id = u.id_user
+        WHERE r.post_id = ?
+        ORDER BY r.date_created DESC
+    ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$postId]);
+        return $stmt->fetchAll();
+    }
 
 
-
+    public function deleteReviewsForPost(int $postId): bool {
+        $sql = "DELETE FROM review WHERE post_id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$postId]);
+    }
 
 
 }

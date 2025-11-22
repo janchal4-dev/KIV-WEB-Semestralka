@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../config/config.php";
 require_once __DIR__ . "/../models/PostModel.php";
+require_once __DIR__ . "/../../vendor/autoload.php";
 
 class UploadController {
 
@@ -44,6 +45,15 @@ class UploadController {
     private function handleUpload(int $authorId) {
 
         $name = trim($_POST["name"] ?? "");
+        $abstract = $_POST["abstract"] ?? "";
+
+
+        // ošetření XSS
+        $config = HTMLPurifier_Config::createDefault();
+        $purifier = new HTMLPurifier($config);
+        $abstract = $purifier->purify($abstract);
+
+
 
         if ($name === "") {
             return $this->renderError("Musíte zadat název článku.");
@@ -76,7 +86,8 @@ class UploadController {
 
         // Uložení do DB
         $model = new PostModel();
-        $ok = $model->createPost($name, $unique, $authorId);
+        $ok = $model->createPost($name, $unique, $authorId, $abstract);
+
 
         if (!$ok) {
             return $this->renderError("Soubor se uložil, ale nezapsal se do databáze.");

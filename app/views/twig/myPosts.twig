@@ -4,24 +4,114 @@
 {% block content %}
     <h1 class="mb-4">Moje články</h1>
 
-    {% for p in posts %}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h4>{{ p.name }}</h4>
+    <div class="table-wrapper">
+        <table class="table table-striped manage-posts-table">
+            <thead>
+            <tr>
+                <th>Název</th>
+                <th>Datum nahrání</th>
+                <th>Stav</th>
+                <th>PDF</th>
+                <th>Změnit</th>
+            </tr>
+            </thead>
 
-                <strong>Stav:</strong>
-                {% if p.status_id == 1 %}
-                    <span class="badge bg-warning">Čeká na schválení</span>
-                {% elseif p.status_id == 2 %}
-                    <span class="badge bg-success">Schváleno</span>
-                {% else %}
-                    <span class="badge bg-danger">Zamítnuto</span>
-                {% endif %}
+            <tbody>
+            {% for p in posts %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.date_uploaded|date("d.m.Y H:i") }}</td>
 
-                <br><br>
+                    <td>
+                        {% if p.status_id == 1 %}
+                            <span class="badge bg-secondary">V recenzním řízení</span>
+                        {% elseif p.status_id == 2 %}
+                            <span class="badge bg-success">Přijat</span>
+                        {% elseif p.status_id == 3 %}
+                            <span class="badge bg-danger">Odmítnut</span>
+                        {% endif %}
+                    </td>
 
-                <strong>Nahráno:</strong> {{ p.date_uploaded }}
-            </div>
-        </div>
-    {% endfor %}
+                    <td>
+                        <a href="{{ app_base }}/uploads/{{ p.file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            Zobrazit PDF
+                        </a>
+                    </td>
+                    <td>
+                        {% if p.status_id != 2 %}
+                            <a href="?page=editPost&id={{ p.id_post }}" class="btn btn-warning btn-sm">Upravit</a>
+                            <a href="?page=deletePost&id={{ p.id_post }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Opravdu chcete smazat tento článek?');">
+                                🗑️ Smazat
+                            </a>
+
+                        {% else %}
+                            <span class="badge bg-success">Publikováno</span>
+                        {% endif %}
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="5">
+                        <strong>Recenze:</strong>
+
+                        {% if p.reviews is empty %}
+                            <p class="text-muted">Zatím žádné recenze.</p>
+                        {% else %}
+                            {% for r in p.reviews %}
+                                <div class="border rounded p-2 mb-2 bg-light">
+                                    <strong>Recenzent:</strong> {{ r.reviewer_name }}<br>
+
+                                    <strong>Kvalita:</strong>
+                                    {% if r.rev_quality > 0 %}
+                                        {% for i in 1..r.rev_quality %}★{% endfor %}
+                                    {%endif %}
+
+                                    {% set emptyStars = 5 - (r.rev_quality) %}
+                                    {% if emptyStars > 0 %}
+                                        {% for i in 1..emptyStars %}
+                                            <span class="text-muted">☆</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <br>
+                                    <strong>Jazyk:</strong>
+                                    {% if r.rev_language > 0 %}
+                                        {% for i in 1..r.rev_language %}★{% endfor %}
+                                    {% endif %}
+                                    {% set emptyStars = 5 - (r.rev_language) %}
+                                    {% if emptyStars > 0 %}
+                                        {% for i in 1..emptyStars %}
+                                            <span class="text-muted">☆</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <br>
+                                    <strong>Originalita:</strong>
+                                    {% if r.rev_originality > 0 %}
+                                        {% for i in 1..r.rev_originality %}★{% endfor %}
+                                    {% endif %}
+                                    {% set emptyStars = 5 - (r.rev_originality) %}
+                                    {% if emptyStars > 0 %}
+                                        {% for i in 1..emptyStars %}
+                                            <span class="text-muted">☆</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <br>
+
+                                    <strong>Komentář:</strong>
+                                    <div class="mt-1">
+                                        {% autoescape false %}{{ r.comment }}{% endautoescape %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}

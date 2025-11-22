@@ -11,6 +11,11 @@
                 <h3>{{ p.name }}</h3>
                 <p><strong>Autor:</strong> {{ p.author_name }}</p>
 
+                <strong>Abstrakt:</strong>
+                <div class="mt-1">
+                    {% autoescape false %}{{ p.abstract }}{% endautoescape %}
+                </div>
+
                 <div class="row mt-3">
 
                     {# ------- PDF VIEWER VLEVO ------- #}

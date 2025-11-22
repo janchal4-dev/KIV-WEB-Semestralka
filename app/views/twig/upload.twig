@@ -18,11 +18,23 @@
         </div>
 
         <div class="mb-3">
+            <label>Abstrakt</label>
+            <textarea id="abstract" name="abstract"></textarea>
+        </div>
+
+        <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+        <script>
+            CKEDITOR.replace("abstract");
+        </script>
+
+
+        <div class="mb-3">
             <label class="form-label">PDF soubor</label>
             <input type="file" name="pdfFile" class="form-control" accept="application/pdf" required>
         </div>
 
         <button class="btn btn-primary">Nahrát</button>
     </form>
+
 
 {% endblock %}

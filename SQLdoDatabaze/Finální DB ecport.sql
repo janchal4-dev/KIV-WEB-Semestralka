@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.4-dev+20251120.d136b4450b
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Sob 22. lis 2025, 08:24
--- Verze serveru: 10.4.24-MariaDB
--- Verze PHP: 8.1.5
+-- Vytvořeno: Sob 22. lis 2025, 21:13
+-- Verze serveru: 10.4.32-MariaDB
+-- Verze PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -30,12 +30,22 @@ SET time_zone = "+00:00";
 CREATE TABLE `post` (
   `id_post` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
+  `abstract` text DEFAULT NULL,
   `file_path` varchar(255) NOT NULL,
   `author_id` bigint(20) UNSIGNED NOT NULL,
   `status_id` bigint(20) UNSIGNED NOT NULL DEFAULT 1,
   `date_uploaded` datetime NOT NULL DEFAULT current_timestamp(),
   `date_changed` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Vypisuji data pro tabulku `post`
+--
+
+INSERT INTO `post` (`id_post`, `name`, `abstract`, `file_path`, `author_id`, `status_id`, `date_uploaded`, `date_changed`) VALUES
+(4, 'Baf', NULL, 'pdf_6922009287f3f4.70330173.pdf', 18, 2, '2025-11-22 19:27:30', '2025-11-22 19:27:48'),
+(5, 'admin', '<p>dwddw</p>\r\n\r\n<p><strong>wepefk</strong></p>\r\n', 'pdf_69221274056b75.20024354.pdf', 18, 2, '2025-11-22 20:43:48', '2025-11-22 20:50:21'),
+(6, 'Třetí článek', '<p>Je to <strong>bezva</strong></p>\r\n', 'pdf_692216279c6187.96656472.pdf', 18, 2, '2025-11-22 20:59:35', '2025-11-22 20:59:56');
 
 -- --------------------------------------------------------
 
@@ -48,7 +58,7 @@ CREATE TABLE `post_reviewer` (
   `post_id` bigint(20) UNSIGNED NOT NULL,
   `reviewer_id` bigint(20) UNSIGNED NOT NULL,
   `assigned_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Vypisuji data pro tabulku `post_reviewer`
@@ -56,7 +66,11 @@ CREATE TABLE `post_reviewer` (
 
 INSERT INTO `post_reviewer` (`id`, `post_id`, `reviewer_id`, `assigned_at`) VALUES
 (46, 3, 6, '2025-11-21 21:20:10'),
-(47, 3, 5, '2025-11-21 21:20:21');
+(47, 3, 5, '2025-11-21 21:20:21'),
+(48, 4, 15, '2025-11-22 19:27:57'),
+(49, 4, 16, '2025-11-22 19:50:36'),
+(50, 6, 16, '2025-11-22 21:00:00'),
+(51, 6, 15, '2025-11-22 21:07:01');
 
 -- --------------------------------------------------------
 
@@ -67,7 +81,7 @@ INSERT INTO `post_reviewer` (`id`, `post_id`, `reviewer_id`, `assigned_at`) VALU
 CREATE TABLE `post_status` (
   `id_status` bigint(20) UNSIGNED NOT NULL,
   `status_name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Vypisuji data pro tabulku `post_status`
@@ -95,14 +109,18 @@ CREATE TABLE `review` (
   `post_id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `status_id` bigint(20) UNSIGNED NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Vypisuji data pro tabulku `review`
 --
 
 INSERT INTO `review` (`id_review`, `rev_quality`, `rev_language`, `rev_originality`, `comment`, `date_created`, `published`, `post_id`, `user_id`, `status_id`) VALUES
-(8, 5, 4, 2, '', '2025-11-21 21:20:44', 3, 3, 5, 1);
+(8, 5, 4, 2, '', '2025-11-21 21:20:44', 3, 3, 5, 1),
+(9, 5, 4, 3, '', '2025-11-22 20:20:02', 2, 4, 15, 1),
+(10, 2, 3, 4, '<p>fhgh</p>\r\n', '2025-11-22 20:12:07', 2, 4, 16, 1),
+(11, 5, 3, 5, '<p>veojojd</p>\r\n\r\n<p>ihieh</p>\r\n\r\n<p><strong>ihdwid</strong></p>\r\n', '2025-11-22 21:00:55', 2, 6, 16, 1),
+(12, 5, 5, 5, '<p><strong>Je to prostě bezva</strong></p>\r\n\r\n<ul>\r\n	<li><strong>Ë</strong></li>\r\n</ul>\r\n', '2025-11-22 21:07:43', 0, 6, 15, 1);
 
 -- --------------------------------------------------------
 
@@ -113,7 +131,7 @@ INSERT INTO `review` (`id_review`, `rev_quality`, `rev_language`, `rev_originali
 CREATE TABLE `review_status` (
   `id_status` bigint(20) UNSIGNED NOT NULL,
   `status_name` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Vypisuji data pro tabulku `review_status`
@@ -133,7 +151,7 @@ INSERT INTO `review_status` (`id_status`, `status_name`) VALUES
 CREATE TABLE `roles` (
   `id_role` bigint(20) UNSIGNED NOT NULL,
   `role_name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Vypisuji data pro tabulku `roles`
@@ -154,7 +172,7 @@ INSERT INTO `roles` (`id_role`, `role_name`) VALUES
 CREATE TABLE `status` (
   `id_status` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Vypisuji data pro tabulku `status`
@@ -181,7 +199,7 @@ CREATE TABLE `user` (
   `email` varchar(255) NOT NULL,
   `blocked` tinyint(1) NOT NULL DEFAULT 0,
   `roles_id` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexy pro exportované tabulky
@@ -253,13 +271,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT pro tabulku `post`
 --
 ALTER TABLE `post`
-  MODIFY `id_post` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_post` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pro tabulku `post_reviewer`
 --
 ALTER TABLE `post_reviewer`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT pro tabulku `post_status`
@@ -271,7 +289,7 @@ ALTER TABLE `post_status`
 -- AUTO_INCREMENT pro tabulku `review`
 --
 ALTER TABLE `review`
-  MODIFY `id_review` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_review` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT pro tabulku `review_status`
@@ -295,7 +313,7 @@ ALTER TABLE `status`
 -- AUTO_INCREMENT pro tabulku `user`
 --
 ALTER TABLE `user`
-  MODIFY `id_user` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_user` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Omezení pro exportované tabulky
