@@ -3,11 +3,11 @@
 
 {% block content %}
 
-    <h1 class="mb-4">Články</h1>
+    <h1 id="headlineAnimation" class="mb-4 fade-type">Články</h1>
 
     {% for p in posts %}
-        <div class="card mb-4">
-            <div class="card-body">
+        <div class="card mb-4 article-card">
+        <div class="card-body">
 
                 <h3>{{ p.name }}</h3>
                 <p><strong>Autor:</strong> {{ p.author_name }}</p>

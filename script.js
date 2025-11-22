@@ -334,7 +334,99 @@ class ManageReviews {
         });
     }
 }
+// blbinka s vyjetím divů v homu
+class HomeAnimation{
 
+    animateHome(){
+        const cards = document.querySelectorAll(".news-card");
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+            });
+        }, {
+            threshold: 0.4
+        });
+
+        cards.forEach(card => observer.observe(card));
+
+    }
+    fadeTypeText(selector, speed = 20) {
+        const el = document.querySelector(selector);
+        if (!el) return;
+
+        const text = el.textContent;
+        el.textContent = "";
+        el.classList.add("visible");
+
+        let i = 0;
+        const interval = setInterval(() => {
+            el.textContent += text[i];
+            i++;
+
+            if (i >= text.length) clearInterval(interval);
+        }, speed);
+    }
+
+}
+
+// blbinka s vyjetím článků v articles
+class ArticlesAnimation{
+
+    animateArticles(){
+        const cards = document.querySelectorAll(".article-card");
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+            });
+        }, {
+            threshold: 0.3
+        });
+
+        cards.forEach(card => observer.observe(card));
+    }
+
+    fadeTypeText(selector, speed = 20) {
+        const el = document.querySelector(selector);
+        if (!el) return;
+
+        const text = el.textContent;
+        el.textContent = "";
+        el.classList.add("visible");
+
+        let i = 0;
+        const interval = setInterval(() => {
+            el.textContent += text[i];
+            i++;
+
+            if (i >= text.length) clearInterval(interval);
+        }, speed);
+    }
+}
+
+class ProgramAnimation{
+    fadeTypeText(selector, speed = 20) {
+        const el = document.querySelector(selector);
+        if (!el) return;
+
+        const text = el.textContent;
+        el.textContent = "";
+        el.classList.add("visible");
+
+        let i = 0;
+        const interval = setInterval(() => {
+            el.textContent += text[i];
+            i++;
+
+            if (i >= text.length) clearInterval(interval);
+        }, speed);
+    }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -352,5 +444,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (document.querySelector(".review-admin-table")) {
         new ManageReviews();
+    }
+
+    if (document.querySelector(".news-card")) {
+        const anim = new HomeAnimation();
+        anim.animateHome();
+        anim.fadeTypeText("#headlineAnimation", 40);
+    }
+
+    if (document.querySelector(".article-card")) {
+        const anim = new ArticlesAnimation();
+        anim.animateArticles();
+        anim.fadeTypeText("#headlineAnimation", 40);
+    }
+
+    if (document.querySelector(".program-card")) {
+        const anim = new ProgramAnimation()
+        anim.fadeTypeText("#headlineAnimation", 40);
     }
 });

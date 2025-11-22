@@ -95,6 +95,39 @@ html, body {
     border-radius: 6px;
 }
 
+/* Výchozí stav – neviditelné a lehce posunuté */
+.news-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1.8s ease, transform 1.8s ease;
+}
+
+/* Když je karta vidět */
+.news-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.news-card, .article-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+}
+
+.news-card.visible, .article-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-type {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.fade-type.visible {
+    opacity: 1;
+}
+
 
 
 .text-justify {
