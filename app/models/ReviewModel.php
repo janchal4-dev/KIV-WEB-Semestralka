@@ -126,5 +126,18 @@ ORDER BY r.date_created DESC
         return $stmt->execute([$postId]);
     }
 
+    public function deleteReview(int $reviewId): bool {
+        $stmt = $this->db->prepare("DELETE FROM review WHERE id_review = ?");
+        return $stmt->execute([$reviewId]);
+    }
+
+
+    public function getReviewById(int $id): ?array {
+        $stmt = $this->db->prepare("SELECT * FROM review WHERE id_review = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
+
+
 
 }

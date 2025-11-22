@@ -32,6 +32,11 @@
                             <a href="?page=review&id={{ post.id_post }}" class="btn btn-sm btn-outline-primary">
                                 ✏️ Upravit / napsat recenzi
                             </a>
+                            <a href="?page=deleteReview&id={{ post.my_review.id_review }}"
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Opravdu smazat tuto recenzi?');">
+                                🗑️ Smazat recenzi
+                            </a>
                         {% endif %}
                     </td>
 
