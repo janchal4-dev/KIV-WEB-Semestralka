@@ -22,9 +22,15 @@
                     <td>{{ post.author_name }}</td>    {# alias z SQL #}
                     <td>{{ post.date_uploaded|date("d.m.Y H:i") }}</td>
                     <td>
-                        <a href="?page=review&id={{ post.id_post }}" class="btn btn-sm btn-outline-primary">
-                            ✏️ Upravit / napsat recenzi
-                        </a>
+                        {% if r.published == 2 %}
+                            <span class="badge bg-success">Schváleno – nelze upravit</span>
+                        {% else %}
+                            <a href="?page=review&id={{ post.id_post }}" class="btn btn-sm btn-outline-primary">
+                                ✏️ Upravit / napsat recenzi
+                            </a>
+
+                        {% endif %}
+
                     </td>
                 </tr>
             {% else %}
@@ -37,4 +43,21 @@
             </tbody>
         </table>
     </div>
+    <h2 class="mt-4">Moje recenze</h2>
+
+    {% for r in reviews %}
+        <div class="card p-3 mb-2">
+            <strong>Článek:</strong> {{ r.post_name }}<br>
+            <strong>Stav:</strong>
+            {% if r.published == 0 %}
+                <span class="badge bg-secondary">Čeká na schválení</span>
+            {% elseif r.published == 1 %}
+                <span class="badge bg-danger">Zamítnuto</span>
+            {% elseif r.published == 2 %}
+                <span class="badge bg-success">Schváleno</span>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
 {% endblock %}

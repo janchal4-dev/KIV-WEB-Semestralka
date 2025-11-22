@@ -1,5 +1,7 @@
 <?php
 require_once MODEL_PATH . "/PostModel.php";
+require_once MODEL_PATH . "/ReviewModel.php";
+
 
 class ReviewListController
 {
@@ -21,15 +23,20 @@ class ReviewListController
             header("Location: index.php?page=home");
             exit;
         }
+        $app = new MyApplication();
 
         $postModel = new PostModel();
-        $posts = $postModel->getPostsForReviewer($user["id_user"]);
+        $reviewModel = new ReviewModel();
 
-        $app = new MyApplication();
+        $posts   = $postModel->getPostsForReviewer($user["id_user"]);
+        $reviews = $reviewModel->getReviewsByReviewer($user["id_user"]);
+
         $app->renderTwig("reviewList.twig", [
-            "user" => $user,
+            "user"        => $user,
             "currentPage" => "reviewList",
             "posts"       => $posts,
+            "reviews"     => $reviews,
         ]);
+
     }
 }

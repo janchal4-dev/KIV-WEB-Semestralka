@@ -81,29 +81,41 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
     // blokace uživatele
     case "DELETE":
+
         if (!isset($id)) {
             http_response_code(400);
             echo json_encode(["error" => "ID uživatele chybí."]);
             exit;
         }
 
-        // admin nesmí blokovat admina/superadmina
         $target = $model->getUserById($id);
+
         if (!$target) {
             http_response_code(404);
             echo json_encode(["error" => "Uživatel nenalezen."]);
             exit;
         }
 
+        // ochrana vyšších rolí
         if ($user["roles_id"] == 2 && $target["roles_id"] <= 2) {
             http_response_code(403);
-            echo json_encode(["error" => "Nemůžete blokovat vyššího uživatele."]);
+            echo json_encode(["error" => "Nemůžete měnit vyšší roli."]);
             exit;
         }
 
+        // ❗❗ SMAZÁNÍ – pokud přijde hlavička
+        if (isset($_SERVER["HTTP_X_DELETE_USER"])) {
+            $ok = $model->deleteUser($id);
+            echo json_encode(["success" => $ok]);
+            exit;
+        }
+
+        // ❗❗ BLOKOVÁNÍ – normální DELETE bez hlavičky
         $ok = $model->blockUser($id);
         echo json_encode(["success" => $ok]);
-        break;
+        exit;
+
+
 
 
     // PATCH /api/users/{id} → odblokování

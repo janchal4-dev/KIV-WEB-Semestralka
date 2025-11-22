@@ -1,6 +1,7 @@
 <?php
 
 require_once MODEL_PATH . "/PostModel.php";
+require_once MODEL_PATH . "/ReviewModel.php";
 
 class ReviewController {
     public function render() {
@@ -13,13 +14,26 @@ class ReviewController {
             exit;
         }
 
+
         $postId = $_GET["id"] ?? null;
         if (!$postId) {
             die("❌ Chybí ID článku k recenzi.");
         }
 
+        $reviewModel = new ReviewModel();
+        $existing = $reviewModel->getReviewByUserAndPost($_SESSION["user"]["id_user"], $postId);
+
+        if ($existing && $existing["published"] == 2) {
+            die("❌ Tato recenze už byla schválena a nelze ji upravit.");
+        }
+        if ($existing && $existing["published"] == 3) {
+            die("❌ Tato recenze už byla zamítnuta a nelze ji upravit.");
+        }
+
+
         $model = new PostModel();
         $post = $model->getPostById($postId);
+
 
         (new MyApplication())->renderTwig("review.twig", [
             "currentPage" => "review",
@@ -27,4 +41,5 @@ class ReviewController {
             "post" => $post
         ]);
     }
+
 }

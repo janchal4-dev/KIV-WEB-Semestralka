@@ -66,6 +66,16 @@
                            href="?page=manageReviews">Správa recenzí</a>
                     </li>
                 {% endif %}
+                {# Autor vidí stav svého článku #}
+                {% if user.roles_id == 4 %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ currentPage == 'myPosts' ? 'active fw-bold' }}"
+                           href="?page=myPosts">
+                            Moje články
+                        </a>
+                    </li>
+                {% endif %}
+
 
 
             </ul>

@@ -1,0 +1,27 @@
+{% extends "base.twig" %}
+{% block title %}Moje články{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Moje články</h1>
+
+    {% for p in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h4>{{ p.name }}</h4>
+
+                <strong>Stav:</strong>
+                {% if p.status_id == 1 %}
+                    <span class="badge bg-warning">Čeká na schválení</span>
+                {% elseif p.status_id == 2 %}
+                    <span class="badge bg-success">Schváleno</span>
+                {% else %}
+                    <span class="badge bg-danger">Zamítnuto</span>
+                {% endif %}
+
+                <br><br>
+
+                <strong>Nahráno:</strong> {{ p.date_uploaded }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

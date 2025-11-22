@@ -26,7 +26,7 @@ class UserModel {
 
 
         $sql = "INSERT INTO user (username, name, email, password, roles_id, blocked)
-            VALUES (?, ?, ?, ?, 3, 0)";
+            VALUES (?, ?, ?, ?, 4, 0)";
 
         $stmt = $this->db->prepare($sql);
 
@@ -116,6 +116,12 @@ class UserModel {
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
+
+    public function deleteUser(int $id): bool {
+        $stmt = $this->db->prepare("DELETE FROM user WHERE id_user = ?");
+        return $stmt->execute([$id]);
+    }
+
 
 
 

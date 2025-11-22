@@ -52,28 +52,62 @@ ORDER BY r.date_created DESC
     public function createOrUpdateReview($postId, $userId, $q, $l, $o, $comment): bool {
 
         // 1) Zjisti, jestli recenze už existuje
-        $sql = "SELECT id_review FROM review WHERE post_id = ? AND user_id = ?";
+        $sql = "SELECT id_review, published 
+            FROM review 
+            WHERE post_id = ? AND user_id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$postId, $userId]);
         $existing = $stmt->fetch();
 
-        // 2️) UPDATE existující recenze
+        // 2) Existuje a je SCHVÁLENÁ → nesmí se měnit
+        if ($existing && (int)$existing["published"] === 2) {
+            return false;  // zamítneme úpravu
+        }
+
+        // 3) UPDATE existující recenze (čeká nebo zamítnutá → může se přepsat)
         if ($existing) {
             $sql = "UPDATE review 
-                SET rev_quality = ?, rev_language = ?, rev_originality = ?, 
-                    comment = ?, date_created = NOW(), published = 0
+                SET rev_quality = ?, 
+                    rev_language = ?, 
+                    rev_originality = ?, 
+                    comment = ?, 
+                    date_created = NOW(), 
+                    published = 0      -- po úpravě zase čeká na schválení
                 WHERE id_review = ?";
             $stmt = $this->db->prepare($sql);
             return $stmt->execute([$q, $l, $o, $comment, $existing["id_review"]]);
         }
 
-        // 3)  INSERT nové recenze
+        // 4) INSERT nové recenze
         $sql = "INSERT INTO review 
             (post_id, user_id, rev_quality, rev_language, rev_originality, comment, date_created, published)
             VALUES (?, ?, ?, ?, ?, ?, NOW(), 0)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$postId, $userId, $q, $l, $o, $comment]);
     }
+
+    public function getReviewsByReviewer(int $reviewerId): array {
+        $sql = "SELECT r.*, 
+                   p.name AS post_name
+            FROM review r
+            JOIN post p ON p.id_post = r.post_id
+            WHERE r.user_id = ?
+            ORDER BY r.date_created DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$reviewerId]);
+        return $stmt->fetchAll();
+    }
+
+    public function getReviewByUserAndPost($userId, $postId) {
+        $sql = "SELECT * FROM review WHERE user_id = ? AND post_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$userId, $postId]);
+        return $stmt->fetch();
+    }
+
+
+
 
 
 

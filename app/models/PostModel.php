@@ -93,5 +93,18 @@ class PostModel
         return $stmt->fetchAll();
     }
 
+    // ať autor vidí své články
+    public function getPostsByAuthor(int $authorId): array {
+        $sql = "SELECT p.*, s.name AS status_name
+            FROM post p
+            JOIN status s ON s.id_status = p.status_id
+            WHERE p.author_id = ?
+            ORDER BY p.date_uploaded DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$authorId]);
+        return $stmt->fetchAll();
+    }
+
 
 }

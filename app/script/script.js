@@ -5,6 +5,7 @@ class UserSettings {
         this.initRoleChange();
         this.initBlocking();
         this.initUnblocking();
+        this.initDeleting();
     }
 
     // Změna role uživatele
@@ -38,7 +39,7 @@ class UserSettings {
         });
     }
 
-    // 🔴 Blokování uživatele
+    // Blokování uživatele
     initBlocking() {
         document.querySelectorAll(".block-btn").forEach(btn => {
             btn.addEventListener("click", async e => {
@@ -96,6 +97,38 @@ class UserSettings {
             });
         });
     }
+    // Smazání uživatele
+    initDeleting() {
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", async e => {
+
+                if (!confirm("Opravdu chcete uživatele trvale smazat?")) return;
+
+                const tr = e.target.closest("tr");
+                const id = tr.dataset.id;
+
+                try {
+                    const res = await fetch(`app/api/users.php/${id}`, {
+                        method: "DELETE",
+                        headers: { "X-Delete-User": "1" }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert("🗑 Uživatel byl smazán.");
+                        tr.remove();
+                    } else {
+                        alert("❌ " + (data.error || "Nepodařilo se smazat."));
+                    }
+
+                } catch (err) {
+                    console.error("Delete error:", err);
+                }
+            });
+        });
+    }
+
 }
 
 // // 🔥 Automatická inicializace jen na stránce userSettings
@@ -161,6 +194,8 @@ class ReviewHandler {
                 rev_originality: document.getElementById("rev_originality").value,
                 comment: CKEDITOR.instances.reviewComment.getData(),
             };
+            console.log("POST ID:", document.getElementById("post_id")?.value);
+
 
             try {
                 const res = await fetch("app/api/reviews.php", {

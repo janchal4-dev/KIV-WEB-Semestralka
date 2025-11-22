@@ -34,25 +34,39 @@ if ($action === "reviews.php" && $method === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
     $postId = $data["post_id"] ?? null;
-    // hodnocení hvězdama když nula tak nula
+
     $q = (int)($data["rev_quality"] ?? 0);
     $l = (int)($data["rev_language"] ?? 0);
     $o = (int)($data["rev_originality"] ?? 0);
-    // komentář
-    $commentRaw = $data["comment"] ?? "";
 
-    // 💡 HTMLPurifier - čistí od útoků
+    // komentář – prošel přes Purifier
     $config = HTMLPurifier_Config::createDefault();
     $purifier = new HTMLPurifier($config);
-    $commentClean = $purifier->purify($commentRaw);
+    $commentClean = $purifier->purify($data["comment"] ?? "");
 
-    //$ok = $model->createReview($postId, $user["id_user"], $q, $l, $o, $commentClean);
-    $ok = $model->createOrUpdateReview($postId, $user["id_user"], $q, $l, $o, $commentClean);
+    // uloží nebo odmítne
+    $ok = $model->createOrUpdateReview(
+        $postId,
+        $user["id_user"],
+        $q,
+        $l,
+        $o,
+        $commentClean
+    );
 
+    // pokud funkce v modelu vrátila false → důvod: recenze je SCHVÁLENÁ
+    if (!$ok) {
+        echo json_encode([
+            "success" => false,
+            "error"   => "Tato recenze už byla schválena a nelze ji upravit."
+        ]);
+        exit;
+    }
 
-    echo json_encode(["success" => $ok]);
+    echo json_encode(["success" => true]);
     exit;
 }
+
 
 
 // recenze schvalována / zamítána adminem

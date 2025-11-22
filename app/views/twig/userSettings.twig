@@ -50,15 +50,34 @@
                         {% endif %}
                     </td>
 
-                    <td class="text-center">
-                        {% if u.can_unblock %}
-                            <button class="btn btn-sm btn-outline-success unblock-btn">Odblokovat</button>
-                        {% elseif u.can_block %}
-                            <button class="btn btn-sm btn-outline-danger block-btn">Zakázat</button>
-                        {% else %}
-                            –
+                    <td class="actions-cell text-center">
+
+                        {# BLOKACE / ODBLOKACE #}
+                        {% if user.roles_id <= 2 and u.roles_id > user.roles_id %}
+                            {% if u.blocked %}
+                                <button class="btn btn-sm btn-outline-success unblock-btn">Odblokovat</button>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline-warning block-btn">Zakázat</button>
+                            {% endif %}
                         {% endif %}
+
+                        {# SMAZÁNÍ #}
+                        {% if user.roles_id <= 2 and u.roles_id > user.roles_id %}
+                            <button class="btn btn-sm btn-danger delete-btn ms-1">Smazat</button>
+                        {% endif %}
+
                     </td>
+
+
+{#                    <td class="text-center">#}
+{#                        {% if u.can_unblock %}#}
+{#                            <button class="btn btn-sm btn-outline-success unblock-btn">Odblokovat</button>#}
+{#                        {% elseif u.can_block %}#}
+{#                            <button class="btn btn-sm btn-outline-danger block-btn">Zakázat</button>#}
+{#                        {% else %}#}
+{#                            –#}
+{#                        {% endif %}#}
+{#                    </td>#}
 
                 </tr>
             {% endfor %}
