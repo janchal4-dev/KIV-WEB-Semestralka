@@ -21,7 +21,7 @@ class PostModel
         return $stmt->fetchAll();
     }
 
-
+    // vytvoření článku
     public function createPost(string $name, string $uniqueFileName, int $authorId, string $abstract): bool
     {
         $sql = "INSERT INTO post (name, file_path, author_id, status_id, date_uploaded, abstract)
@@ -31,23 +31,28 @@ class PostModel
         return $stmt->execute([$name, $uniqueFileName, $authorId, $abstract]);
     }
 
-    public function updatePost(int $postId, string $title, string $abstract, ?string $newFile): bool
+
+    // aktualizace článku
+    public function updatePost($postId, $name, $abstract, $newPdfName = null)
     {
-        if ($newFile) {
+        // znovunahrání pdf není povinné - když je tak se přepíše
+        if ($newPdfName) {
             $sql = "UPDATE post 
-                SET name = ?, abstract = ?, file_path = ?, date_changed = NOW() 
+                SET name = ?, abstract = ?, file_path = ? 
                 WHERE id_post = ?";
-            $params = [$title, $abstract, $newFile, $postId];
+            $params = [$name, $abstract, $newPdfName, $postId];
+
         } else {
             $sql = "UPDATE post 
-                SET name = ?, abstract = ?, date_changed = NOW() 
+                SET name = ?, abstract = ?
                 WHERE id_post = ?";
-            $params = [$title, $abstract, $postId];
+            $params = [$name, $abstract, $postId];
         }
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = getDB()->prepare($sql);
         return $stmt->execute($params);
     }
+
 
 
 
@@ -65,7 +70,7 @@ class PostModel
         return $this->db->query($sql)->fetchAll();
     }
 
-
+    // vrací články podle id (pro seřazení popořadě)
     public function getPostById(int $id): ?array
     {
         $stmt = $this->db->prepare("SELECT * FROM post WHERE id_post = ?");
@@ -82,7 +87,7 @@ class PostModel
     }
 
 
-
+    // jen schválené
     public function getApprovedPosts(): array {
         $sql = "SELECT p.*, u.name AS author_name
             FROM post p
@@ -92,13 +97,13 @@ class PostModel
         return $this->db->query($sql)->fetchAll();
     }
 
-
+    // články pro recenzenta
     public function getPostsForReviewer(int $reviewerId): array
     {
         $sql = "
         SELECT 
             p.id_post,
-            p.name AS title,              -- alias pro název článku
+            p.name AS title,              -- titulek článku
             p.date_uploaded,
             u.name AS author_name         -- jméno autora
         FROM post_reviewer pr

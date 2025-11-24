@@ -4,7 +4,7 @@
 {% block content %}
     <h1>Upravit článek</h1>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data">
 
         <div class="mb-3">
             <label>Název</label>
@@ -18,7 +18,7 @@
 
         <div class="mb-3">
             <label>Nový PDF soubor (volitelné)</label>
-            <input class="form-control" type="file" name="file">
+            <input type="file" name="pdfFile" class="form-control" accept="application/pdf">
         </div>
 
         <button class="btn btn-success">Uložit změny</button>

@@ -21,6 +21,7 @@ if ($user["roles_id"] > 2) {
     exit;
 }
 
+// zjištení akce z urlka
 $method = $_SERVER["REQUEST_METHOD"];
 $uri = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
 //$action = $uri[array_key_last($uri)];
@@ -79,7 +80,6 @@ if ($action === "assign" && $method === "POST") {
     echo json_encode(["success" => true]);
     exit;
 }
-
 
 
 // odebrání recenzenta

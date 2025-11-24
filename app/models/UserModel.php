@@ -8,7 +8,7 @@ class UserModel {
     public function __construct() {
         $this->db = Database::getConnection();
     }
-
+    // registrace
     public function register($username, $name, $email, $password): bool {
         //️ ochrana proti XSS
         $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
@@ -38,6 +38,7 @@ class UserModel {
         ]);
     }
 
+    // přihlášení
     public function login($username, $password) {
         //️ ochrana proti XSS
         $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
@@ -94,8 +95,6 @@ class UserModel {
         $stmt = $this->db->prepare("UPDATE user SET roles_id = ? WHERE id_user = ?");
         return $stmt->execute([$newRole, $id]);
     }
-
-
 
     public function blockUser(int $id): bool {
         $stmt = $this->db->prepare("UPDATE user SET blocked = 1 WHERE id_user = ?");

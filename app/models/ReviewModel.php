@@ -86,6 +86,7 @@ ORDER BY r.date_created DESC
         return $stmt->execute([$postId, $userId, $q, $l, $o, $comment]);
     }
 
+    // recenze jednoho autora
     public function getReviewsByReviewer(int $reviewerId): array {
         $sql = "SELECT r.*, 
                    p.name AS post_name
@@ -105,7 +106,7 @@ ORDER BY r.date_created DESC
         $stmt->execute([$userId, $postId]);
         return $stmt->fetch();
     }
-
+    // recenze pro článek - spojení
     public function getReviewsForPost(int $postId): array {
         $sql = "
         SELECT r.*, u.name AS reviewer_name
@@ -120,18 +121,19 @@ ORDER BY r.date_created DESC
     }
 
 
+    // odstranění recenzí - pro mazání článku - jinak by to vyhodilo error - dal jsem přednost před sql řešením v DB (vím že to jde)
     public function deleteReviewsForPost(int $postId): bool {
         $sql = "DELETE FROM review WHERE post_id = ?";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$postId]);
     }
-
+    // odstranění recenze
     public function deleteReview(int $reviewId): bool {
         $stmt = $this->db->prepare("DELETE FROM review WHERE id_review = ?");
         return $stmt->execute([$reviewId]);
     }
 
-
+    // vrátí recenzi
     public function getReviewById(int $id): ?array {
         $stmt = $this->db->prepare("SELECT * FROM review WHERE id_review = ?");
         $stmt->execute([$id]);
