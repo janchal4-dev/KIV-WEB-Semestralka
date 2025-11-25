@@ -7,7 +7,8 @@ class ManagePostsController {
 
         if (session_status() === PHP_SESSION_NONE) session_start();
 
-        if ($_SESSION["user"]["roles_id"] > 2) {
+        // aby se tam dostal jen super/admin
+        if ($_SESSION["user"]["roles_id"] != 2 && $_SESSION["user"]["roles_id"] != 1) {
             header("Location: index.php?page=home");
             exit;
         }

@@ -12,7 +12,7 @@ class UploadController {
         }
 
         if (empty($_SESSION["user"])) {
-            header("Location: index.php?page=login");
+            header("Location: index.php?page=home");
             exit;
         }
 

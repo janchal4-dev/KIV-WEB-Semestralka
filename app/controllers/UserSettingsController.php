@@ -11,7 +11,7 @@ class UserSettingsController {
 
         // Kontrola přihlášení
         if (empty($_SESSION["user"])) {
-            header("Location: index.php?page=login");
+            header("Location: index.php?page=home");
             exit;
         }
         // jen pro (super)adminy

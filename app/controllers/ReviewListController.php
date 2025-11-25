@@ -10,7 +10,7 @@ class ReviewListController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
+        // kontrola přihlášení
         if (empty($_SESSION["user"])) {
             header("Location: index.php?page=login");
             exit;

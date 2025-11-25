@@ -53,11 +53,11 @@ class EditPostController
 
     private function saveChanges(int $postId, int $authorId)
     {
-        // ❗ Název článku – neobsahuje HTML → stačí htmlspecialchars
+        // Název článku – neobsahuje HTML takže stačí htmlspecialchars
         $name = trim($_POST["name"] ?? "");
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
-        // ❗ Abstrakt přes HTMLPurifier (CKEditor)
+        // Abstrakt přes CKEditor
         $abstractRaw = $_POST["abstract"] ?? "";
 
         $config = HTMLPurifier_Config::createDefault();
@@ -81,6 +81,7 @@ class EditPostController
                 return $this->renderError("Soubor musí být PDF.", $postId);
             }
 
+            // aby byl zas unikátní
             $ext = pathinfo($_FILES["pdfFile"]["name"], PATHINFO_EXTENSION);
             $newPdfName = uniqid("pdf_", true) . "." . $ext;
 

@@ -10,6 +10,7 @@ class ReviewController {
             session_start();
         }
 
+        // jen pro recezenty
         if (empty($_SESSION["user"]) || $_SESSION["user"]["roles_id"] != 3) {
             header("Location: index.php?page=home");
             exit;
