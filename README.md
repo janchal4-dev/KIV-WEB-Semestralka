@@ -52,70 +52,72 @@ Aplikace umožňuje:
 ---
 
 ## 3. Adresářová struktura projektu
-app/
-├── api/
-│ ├── posts.php # REST API pro články
-│ ├── reviews.php # REST API pro recenze
-│ └── users.php # REST API pro správu uživatelů
-│
-├── config/
-│ ├── config.php # cesty, definice konstant, getDB()
-│ └── db.php # DB login údaje
-│
-├── controllers/
-│ ├── ArticlesController.php
-│ ├── DeletePostController.php
-│ ├── DeleteReviewController.php
-│ ├── EditPostController.php
-│ ├── HomeController.php
-│ ├── LoginController.php
-│ ├── LoginErrorController.php
-│ ├── LogoutController.php
-│ ├── ManagePostsController.php
-│ ├── ManageReviewsController.php
-│ ├── MyPostsController.php
-│ ├── ProgramController.php
-│ ├── RegistrationController.php
-│ ├── ReviewController.php
-│ ├── ReviewListController.php
-│ ├── UploadController.php
-│ └── UserSettingsController.php
-│
-├── models/
-│ ├── Database.php # PDO wrapper
-│ ├── PostModel.php # články
-│ ├── ReviewModel.php # recenze
-│ └── UserModel.php # uživatelé
-│
-├── script/
-│ └── script.js # JS logika + animace + AJAX (fetch)
-│
-├── style/
-│ └── style.css
-│
-├── views/twig/
-│ ├── articles.twig
-│ ├── base.twig
-│ ├── editPost.twig
-│ ├── home.twig
-│ ├── loginError.twig
-│ ├── managePosts.twig
-│ ├── manageReviews.twig
-│ ├── myPosts.twig
-│ ├── program.twig
-│ ├── registration.twig
-│ ├── review.twig
-│ ├── reviewList.twig
-│ ├── upload.twig
-│ └── userSettings.twig
-│
-└── MyApplication.php # centrální router + Twig inicializace
 
-uploads/ # nahrané PDF články
-img/ # obrázky
-vendor/ # Composer knihovny
+```text
+├── app/
+│   ├── api/
+│   │   ├── posts.php               # REST API pro články
+│   │   ├── reviews.php             # REST API pro recenze
+│   │   └── users.php               # REST API pro správu uživatelů
+│   │
+│   ├── config/
+│   │   ├── config.php              # Cesty, definice konstant, getDB()
+│   │   └── db.php                  # DB login údaje
+│   │
+│   ├── controllers/
+│   │   ├── ArticlesController.php
+│   │   ├── DeletePostController.php
+│   │   ├── DeleteReviewController.php
+│   │   ├── EditPostController.php
+│   │   ├── HomeController.php
+│   │   ├── LoginController.php
+│   │   ├── LoginErrorController.php
+│   │   ├── LogoutController.php
+│   │   ├── ManagePostsController.php
+│   │   ├── ManageReviewsController.php
+│   │   ├── MyPostsController.php
+│   │   ├── ProgramController.php
+│   │   ├── RegistrationController.php
+│   │   ├── ReviewController.php
+│   │   ├── ReviewListController.php
+│   │   ├── UploadController.php
+│   │   └── UserSettingsController.php
+│   │
+│   ├── models/
+│   │   ├── Database.php            # PDO wrapper
+│   │   ├── PostModel.php           # Články
+│   │   ├── ReviewModel.php         # Recenze
+│   │   └── UserModel.php           # Uživatelé
+│   │
+│   ├── script/
+│   │   └── script.js               # JS logika + animace + AJAX (fetch)
+│   │
+│   ├── style/
+│   │   └── style.css
+│   │
+│   ├── views/twig/
+│   │   ├── articles.twig
+│   │   ├── base.twig
+│   │   ├── editPost.twig
+│   │   ├── home.twig
+│   │   ├── loginError.twig
+│   │   ├── managePosts.twig
+│   │   ├── manageReviews.twig
+│   │   ├── myPosts.twig
+│   │   ├── program.twig
+│   │   ├── registration.twig
+│   │   ├── review.twig
+│   │   ├── reviewList.twig
+│   │   ├── upload.twig
+│   │   └── userSettings.twig
+│   │
+│   └── MyApplication.php           # Centrální router + Twig inicializace
+│
+├── uploads/                        # Nahrané PDF články
+├── img/                            # Obrázky
+└── vendor/                         # Composer knihovny
 
----
+```
 
 ## 4. Architektura aplikace (MVC)
 
@@ -222,6 +224,3 @@ vendor/ # Composer knihovny
 - schváleno / zamítnuto  
 
 ---
-
-Hotovo — splňuje to požadavky přesně tak, jak to chtěli.  
-Kdybys chtěl dokumentaci ještě jako PDF, dej vědět a převedu ji.
