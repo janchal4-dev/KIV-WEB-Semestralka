@@ -1,6 +1,5 @@
 # Konferenční systém pro správu článků a recenzí  
 **Autor:** Jan Chaloupka  
-**Email:** 
 **Předmět:** KIV/WEB  
 **Datum vytvoření:** 22. 11. 2025  
 
